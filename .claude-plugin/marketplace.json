@@ -1,0 +1,14 @@
+{
+  "name": "mgt-insurance-main",
+  "owner": {
+    "name": "MGT Insurance"
+  },
+  "description": "MGT Insurance plugins for Claude",
+  "plugins": [
+    {
+      "name": "mgt-quoting",
+      "source": "./plugins/mgt-quoting",
+      "description": "Quote MGT commercial insurance products from Claude through MGT's quoting tools."
+    }
+  ]
+}

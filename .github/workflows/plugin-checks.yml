@@ -1,0 +1,58 @@
+name: plugin-checks
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  plugin-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Claude Code CLI
+        run: npm i -g @anthropic-ai/claude-code
+
+      - name: Validate marketplace and plugins (strict)
+        run: |
+          set -euo pipefail
+          claude plugin validate --strict .
+          for dir in plugins/*/; do
+            claude plugin validate --strict "$dir"
+          done
+
+      - name: Require a version bump for changed plugins
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only origin/main...HEAD)"
+          status=0
+          for dir in plugins/*/; do
+            name="$(basename "$dir")"
+            if ! printf '%s\n' "$changed" | grep -q "^plugins/${name}/"; then
+              continue
+            fi
+            manifest="plugins/${name}/.claude-plugin/plugin.json"
+            if ! git cat-file -e "origin/main:${manifest}" 2>/dev/null; then
+              echo "${name}: new plugin, no version check"
+              continue
+            fi
+            new="$(jq -r .version "$manifest")"
+            old="$(git show "origin/main:${manifest}" | jq -r .version)"
+            top="$(printf '%s\n%s\n' "$old" "$new" | sort -V | tail -n1)"
+            if [ "$new" = "$old" ] || [ "$top" != "$new" ]; then
+              echo "::error::${name}: version ${new} must be greater than ${old} on main"
+              status=1
+            else
+              echo "${name}: ${old} -> ${new}"
+            fi
+          done
+          exit "$status"

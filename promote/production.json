@@ -1,0 +1,18 @@
+{
+  "replacements": [
+    { "from": "MGT-Insurance/claude-plugins-main", "to": "MGT-Insurance/claude-plugins" },
+    { "from": "mgt-insurance-main", "to": "mgt-insurance" },
+    { "from": "mcp-main.mgtinsurance.ai", "to": "mcp.mgtinsurance.ai" },
+    { "from": "HgnEBwza09kAszhdXtoEnz6ofrCHrM2v", "to": "uMMqJMAYSADCF3BY9yJqHlzpb1tbNV17" },
+    { "from": "MGT Quoting (main)", "to": "MGT Quoting" }
+  ],
+  "forbid": ["-main", "(main)", "HgnEBwza09kAszhdXtoEnz6ofrCHrM2v"],
+  "exclude": [
+    ".github/workflows/promote.yml",
+    "promote/"
+  ],
+  "notice": {
+    "file": "promote/production-notice.md",
+    "prependTo": ["README.md", "CLAUDE.md"]
+  }
+}

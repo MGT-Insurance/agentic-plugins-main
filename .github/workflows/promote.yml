@@ -1,0 +1,108 @@
+name: promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Show the diff without pushing to MGT-Insurance/claude-plugins
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main repository
+        uses: actions/checkout@v4
+        with:
+          path: main
+
+      - name: Check out production repository
+        uses: actions/checkout@v4
+        with:
+          repository: MGT-Insurance/claude-plugins
+          ref: main
+          ssh-key: ${{ secrets.PROMOTE_DEPLOY_KEY }}
+          path: prod
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate the production tree
+        run: node main/promote/promote.mjs main prod
+
+      - name: Install Claude Code CLI
+        run: npm i -g @anthropic-ai/claude-code
+
+      - name: Validate the output (strict)
+        working-directory: prod
+        run: |
+          set -euo pipefail
+          claude plugin validate --strict .
+          for dir in plugins/*/; do
+            claude plugin validate --strict "$dir"
+          done
+
+      - name: Require a version bump for changed plugins
+        working-directory: prod
+        run: |
+          set -euo pipefail
+          git add -A
+          changed="$(git diff --cached --name-only HEAD)"
+          status=0
+          for dir in plugins/*/; do
+            name="$(basename "$dir")"
+            if ! printf '%s\n' "$changed" | grep -q "^plugins/${name}/"; then
+              continue
+            fi
+            manifest="plugins/${name}/.claude-plugin/plugin.json"
+            if ! git cat-file -e "HEAD:${manifest}" 2>/dev/null; then
+              echo "${name}: new plugin, no version check"
+              continue
+            fi
+            new="$(jq -r .version "$manifest")"
+            old="$(git show "HEAD:${manifest}" | jq -r .version)"
+            top="$(printf '%s\n%s\n' "$old" "$new" | sort -V | tail -n1)"
+            if [ "$new" = "$old" ] || [ "$top" != "$new" ]; then
+              echo "::error::${name}: version ${new} must be greater than ${old} in production"
+              status=1
+            else
+              echo "${name}: ${old} -> ${new}"
+            fi
+          done
+          exit "$status"
+
+      - name: Show the diff against production
+        id: diff
+        working-directory: prod
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet HEAD; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes: production already matches main."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --cached --stat HEAD
+            git diff --cached HEAD
+          fi
+
+      - name: Commit and push to production
+        if: ${{ !inputs.dry_run && steps.diff.outputs.changed == 'true' }}
+        working-directory: prod
+        env:
+          MAIN_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Promote from claude-plugins-main@${MAIN_SHA:0:7}"
+          git push origin HEAD:main
+
+      - name: Dry run notice
+        if: ${{ inputs.dry_run && steps.diff.outputs.changed == 'true' }}
+        run: echo "Dry run, nothing was pushed. Run the workflow again with dry_run off to promote."

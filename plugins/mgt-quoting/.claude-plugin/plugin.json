@@ -1,0 +1,18 @@
+{
+  "name": "mgt-quoting",
+  "version": "0.1.0",
+  "displayName": "MGT Quoting (main)",
+  "description": "Quote MGT commercial insurance products from Claude: check appetite, classify the business, and create and edit draft quotes.",
+  "author": {
+    "name": "MGT Insurance",
+    "url": "https://github.com/MGT-Insurance"
+  },
+  "homepage": "https://github.com/MGT-Insurance/claude-plugins-main",
+  "repository": "https://github.com/MGT-Insurance/claude-plugins-main",
+  "license": "MIT",
+  "icon": "./assets/icon.png",
+  "documentationUrl": "https://github.com/MGT-Insurance/claude-plugins-main/tree/main/plugins/mgt-quoting",
+  "supportUrl": "https://www.mgtinsurance.com",
+  "privacyPolicyUrl": "https://www.mgtinsurance.com",
+  "termsOfServiceUrl": "https://www.mgtinsurance.com"
+}
