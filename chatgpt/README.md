@@ -18,7 +18,7 @@ Each [release](https://github.com/MGT-Insurance/chatgpt-plugins/releases) publis
 
 ## Sign-in
 
-The plugin signs in with an MGT Auth0 app through a loopback callback, `http://127.0.0.1:14551/callback`, which is set in `.mcp.json` (`callback_port` and `callback_url`). The Auth0 client in `.mcp.json` must list that URL in its allowed callback URLs, or sign-in fails. The client secret is not in this repository: enter it in OpenAI's plugin portal when you upload the ZIP.
+The plugin signs in with the MGT Auth0 app whose `client_id` is set in `.mcp.json`. The client secret is not in this repository: enter it in OpenAI's plugin portal when you upload the ZIP.
 
 <!-- main-only:start -->
 The main plugin signs in with the dev "Mithril MCP (external testers)" Auth0 client, a public client that has no secret, so leave the portal's client secret empty for the main ZIP. The main ZIP isn't released: download `mgt-quoting-main.zip` from the **plugin-checks** workflow run's artifacts instead of the production release above.

@@ -38,7 +38,7 @@ To promote locally, see [`CLAUDE.md`](CLAUDE.md).
 
 `chatgpt/mgt-quoting/` is the ChatGPT version of the MGT Quoting plugin (`mgt-quoting-main`, shown as **MGT Quoting (main)**). It points at the main MCP server and signs in with the dev "Mithril MCP (external testers)" Auth0 app. That app is a public client, so the main plugin needs no client secret. Production uses the "ChatGPT directory" app instead, whose client secret you enter in OpenAI's plugin portal and never store in this repository.
 
-The plugin folder uses the layout that signed in during testing: `.codex-plugin/plugin.json` (the manifest) and `.mcp.json` (the MCP server and OAuth settings). Sign-in uses a loopback callback, `http://127.0.0.1:14551/callback` (`callback_port` 14551 in `.mcp.json`). Each Auth0 client the plugin uses, dev and production, must list that URL in its allowed callback URLs, or sign-in fails.
+The plugin folder uses the layout that signed in during testing: `.codex-plugin/plugin.json` (the manifest) and `.mcp.json` (the MCP server and OAuth settings). The `oauth` block in `.mcp.json` holds only the Auth0 `client_id`.
 
 The skill and logo that both plugins ship live once in `shared/mgt-quoting/`. After you change a file there, run `node scripts/sync-shared.mjs` and commit the copies. CI runs `node scripts/sync-shared.mjs --check` and fails when a copy drifts.
 
