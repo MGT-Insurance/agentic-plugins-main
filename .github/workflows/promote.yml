@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: Show the diff without pushing to MGT-Insurance/claude-plugins
+        description: Show the diffs without pushing to MGT-Insurance/claude-plugins or MGT-Insurance/chatgpt-plugins
         type: boolean
         default: true
 
@@ -20,7 +20,7 @@ jobs:
         with:
           path: main
 
-      - name: Check out production repository
+      - name: Check out the Claude production repository
         uses: actions/checkout@v4
         with:
           repository: MGT-Insurance/claude-plugins
@@ -28,17 +28,43 @@ jobs:
           ssh-key: ${{ secrets.PROMOTE_DEPLOY_KEY }}
           path: prod
 
+      - name: Check for the ChatGPT deploy key
+        id: chatgpt
+        env:
+          CHATGPT_KEY: ${{ secrets.CHATGPT_PROMOTE_DEPLOY_KEY }}
+        run: |
+          if [ -n "${CHATGPT_KEY}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping the chatgpt-plugins target: the CHATGPT_PROMOTE_DEPLOY_KEY secret is not set. Create MGT-Insurance/chatgpt-plugins, add a write deploy key, and store the private key as that secret to enable it."
+          fi
+
+      - name: Check out the ChatGPT production repository
+        if: ${{ steps.chatgpt.outputs.enabled == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          repository: MGT-Insurance/chatgpt-plugins
+          ref: main
+          ssh-key: ${{ secrets.CHATGPT_PROMOTE_DEPLOY_KEY }}
+          path: prod-chatgpt
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Generate the production tree
-        run: node main/promote/promote.mjs main prod
+      - name: Generate the claude-plugins tree
+        run: node main/promote/promote.mjs main claude-plugins prod
+
+      - name: Generate the chatgpt-plugins tree
+        if: ${{ steps.chatgpt.outputs.enabled == 'true' }}
+        run: node main/promote/promote.mjs main chatgpt-plugins prod-chatgpt
 
       - name: Install Claude Code CLI
         run: npm i -g @anthropic-ai/claude-code
 
-      - name: Validate the output (strict)
+      # Only the Claude target is a Claude marketplace, so only it is validated by the Claude CLI.
+      - name: Validate the claude-plugins output (strict)
         working-directory: prod
         run: |
           set -euo pipefail
@@ -47,7 +73,7 @@ jobs:
             claude plugin validate --strict "$dir"
           done
 
-      - name: Require a version bump for changed plugins
+      - name: Require a version bump for changed plugins (claude-plugins)
         working-directory: prod
         run: |
           set -euo pipefail
@@ -76,7 +102,37 @@ jobs:
           done
           exit "$status"
 
-      - name: Show the diff against production
+      - name: Require a version bump for changed plugins (chatgpt-plugins)
+        if: ${{ steps.chatgpt.outputs.enabled == 'true' }}
+        working-directory: prod-chatgpt
+        run: |
+          set -euo pipefail
+          git add -A
+          changed="$(git diff --cached --name-only HEAD)"
+          status=0
+          for dir in chatgpt/*/; do
+            name="$(basename "$dir")"
+            if ! printf '%s\n' "$changed" | grep -q "^chatgpt/${name}/"; then
+              continue
+            fi
+            manifest="chatgpt/${name}/plugin.json"
+            if ! git cat-file -e "HEAD:${manifest}" 2>/dev/null; then
+              echo "${name}: new plugin, no version check"
+              continue
+            fi
+            new="$(jq -r .version "$manifest")"
+            old="$(git show "HEAD:${manifest}" | jq -r .version)"
+            top="$(printf '%s\n%s\n' "$old" "$new" | sort -V | tail -n1)"
+            if [ "$new" = "$old" ] || [ "$top" != "$new" ]; then
+              echo "::error::${name}: version ${new} must be greater than ${old} in production"
+              status=1
+            else
+              echo "${name}: ${old} -> ${new}"
+            fi
+          done
+          exit "$status"
+
+      - name: Show the diff against claude-plugins
         id: diff
         working-directory: prod
         run: |
@@ -84,14 +140,38 @@ jobs:
           git add -A
           if git diff --cached --quiet HEAD; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No changes: production already matches main."
+            echo "No changes: claude-plugins already matches main."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
             git diff --cached --stat HEAD
             git diff --cached HEAD
           fi
 
-      - name: Commit and push to production
+      - name: Show the diff against chatgpt-plugins
+        id: diff-chatgpt
+        if: ${{ steps.chatgpt.outputs.enabled == 'true' }}
+        working-directory: prod-chatgpt
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet HEAD; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes: chatgpt-plugins already matches main."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --cached --stat HEAD
+            git diff --cached HEAD
+          fi
+
+      - name: Upload the production ChatGPT plugin ZIP
+        if: ${{ steps.chatgpt.outputs.enabled == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: mgt-quoting.zip
+          path: prod-chatgpt/mgt-quoting.zip
+          if-no-files-found: error
+
+      - name: Commit and push to claude-plugins
         if: ${{ !inputs.dry_run && steps.diff.outputs.changed == 'true' }}
         working-directory: prod
         env:
@@ -100,9 +180,21 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Promote from claude-plugins-main@${MAIN_SHA:0:7}"
+          git commit -m "Promote from agentic-plugins-main@${MAIN_SHA:0:7}"
+          git push origin HEAD:main
+
+      - name: Commit and push to chatgpt-plugins
+        if: ${{ !inputs.dry_run && steps.chatgpt.outputs.enabled == 'true' && steps.diff-chatgpt.outputs.changed == 'true' }}
+        working-directory: prod-chatgpt
+        env:
+          MAIN_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Promote from agentic-plugins-main@${MAIN_SHA:0:7}"
           git push origin HEAD:main
 
       - name: Dry run notice
-        if: ${{ inputs.dry_run && steps.diff.outputs.changed == 'true' }}
+        if: ${{ inputs.dry_run }}
         run: echo "Dry run, nothing was pushed. Run the workflow again with dry_run off to promote."

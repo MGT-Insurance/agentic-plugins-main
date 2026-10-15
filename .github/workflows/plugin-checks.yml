@@ -30,6 +30,59 @@ jobs:
             claude plugin validate --strict "$dir"
           done
 
+      # The steps that use scripts/ or chatgpt/ skip in the production repositories, which don't have them.
+      - name: Check shared files are in sync
+        if: ${{ hashFiles('scripts/sync-shared.mjs') != '' }}
+        run: node scripts/sync-shared.mjs --check
+
+      # The ZIP is named after the plugin's `name` in plugin.json.
+      - name: Build the ChatGPT plugin ZIP
+        id: zip
+        if: ${{ hashFiles('scripts/build-chatgpt-zip.mjs') != '' }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          zip_name="$(jq -r .name chatgpt/mgt-quoting/plugin.json).zip"
+          node scripts/build-chatgpt-zip.mjs chatgpt/mgt-quoting "dist/${zip_name}"
+          unzip -l "dist/${zip_name}"
+          echo "name=${zip_name}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload the ChatGPT plugin ZIP
+        if: ${{ hashFiles('scripts/build-chatgpt-zip.mjs') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.zip.outputs.name }}
+          path: dist/${{ steps.zip.outputs.name }}
+          if-no-files-found: error
+
+      - name: Require a version bump for changed ChatGPT plugins
+        if: ${{ hashFiles('chatgpt/*/plugin.json') != '' }}
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only origin/main...HEAD)"
+          status=0
+          for dir in chatgpt/*/; do
+            name="$(basename "$dir")"
+            if ! printf '%s\n' "$changed" | grep -q "^chatgpt/${name}/"; then
+              continue
+            fi
+            manifest="chatgpt/${name}/plugin.json"
+            if ! git cat-file -e "origin/main:${manifest}" 2>/dev/null; then
+              echo "${name} (ChatGPT): new plugin, no version check"
+              continue
+            fi
+            new="$(jq -r .version "$manifest")"
+            old="$(git show "origin/main:${manifest}" | jq -r .version)"
+            top="$(printf '%s\n%s\n' "$old" "$new" | sort -V | tail -n1)"
+            if [ "$new" = "$old" ] || [ "$top" != "$new" ]; then
+              echo "::error::${name} (ChatGPT): version ${new} must be greater than ${old} on main"
+              status=1
+            else
+              echo "${name} (ChatGPT): ${old} -> ${new}"
+            fi
+          done
+          exit "$status"
+
       - name: Require a version bump for changed plugins
         run: |
           set -euo pipefail

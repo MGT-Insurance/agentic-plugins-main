@@ -17,13 +17,13 @@ Accounts outside MGT that hold the `quote:create` access granted by MGT. If you 
 In Claude Code, run:
 
 ```text
-/plugin install mgt-quoting --marketplace MGT-Insurance/claude-plugins-main
+/plugin install mgt-quoting --marketplace MGT-Insurance/agentic-plugins-main
 ```
 
 Or run these two commands:
 
 ```bash
-claude plugin marketplace add MGT-Insurance/claude-plugins-main
+claude plugin marketplace add MGT-Insurance/agentic-plugins-main
 claude plugin install mgt-quoting@mgt-insurance-main
 ```
 
