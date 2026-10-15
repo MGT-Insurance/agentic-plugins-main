@@ -26,7 +26,7 @@ claude plugin uninstall mgt-quoting@mgt-insurance
 
 Nobody commits to `MGT-Insurance/claude-plugins`. A maintainer runs the **promote** workflow here (**Actions** > **promote**) after the matching MCP server release reaches production. The workflow:
 
-1. Generates one production tree per target from this repository by swapping main values for production values, as listed in [`promote/production.json`](promote/production.json). The `claude-plugins` target publishes the Claude plugin. The `chatgpt-plugins` target publishes the ChatGPT plugin and its ZIP.
+1. Generates one production tree per target from this repository by swapping main values for production values, as listed in [`promote/production.json`](promote/production.json). The `claude-plugins` target publishes the Claude plugin. The `chatgpt-plugins` target publishes the ChatGPT plugin. That repository's release workflow builds the ZIP and publishes it as a GitHub release when the plugin version changes.
 2. Validates the result and checks that each changed plugin has a higher version than production.
 3. Commits each result to its production repository, unless you ran it with `dry_run` on. The ChatGPT target is skipped with a message when its deploy key isn't configured.
 
@@ -59,6 +59,6 @@ claude plugin marketplace add MGT-Insurance/agentic-plugins-main
 
 | Plugin | Install | Description |
 |---|---|---|
-| [`mgt-quoting`](plugins/mgt-quoting) | `claude plugin install mgt-quoting@mgt-insurance-main` | Draft MGT commercial insurance quotes from Claude. |
+| [`mgt-quoting`](plugins/mgt-quoting) | `claude plugin install mgt-quoting@mgt-insurance-main` | For insurance agents: quote MGT small-business commercial insurance from Claude. |
 
 Each plugin's README covers its install, update, and data-handling details.

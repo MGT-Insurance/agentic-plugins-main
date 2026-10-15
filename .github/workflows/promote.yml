@@ -163,14 +163,6 @@ jobs:
             git diff --cached HEAD
           fi
 
-      - name: Upload the production ChatGPT plugin ZIP
-        if: ${{ steps.chatgpt.outputs.enabled == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: mgt-quoting.zip
-          path: prod-chatgpt/mgt-quoting.zip
-          if-no-files-found: error
-
       - name: Commit and push to claude-plugins
         if: ${{ !inputs.dry_run && steps.diff.outputs.changed == 'true' }}
         working-directory: prod

@@ -26,7 +26,7 @@
     {
       "name": "chatgpt-plugins",
       "repo": "MGT-Insurance/chatgpt-plugins",
-      "include": ["chatgpt/", ".agents/"],
+      "include": ["chatgpt/", ".agents/", "scripts/build-chatgpt-zip.mjs"],
       "replacements": [
         { "from": "MGT-Insurance/agentic-plugins-main", "to": "MGT-Insurance/chatgpt-plugins" },
         { "from": "mgt-insurance-chatgpt-main", "to": "mgt-insurance-chatgpt" },
@@ -44,7 +44,7 @@
         "file": "promote/production-notice.md",
         "prependTo": ["README.md"]
       },
-      "zip":{ "source": "chatgpt/mgt-quoting", "output": "mgt-quoting.zip" }
+      "zipCheck": { "source": "chatgpt/mgt-quoting" }
     }
   ]
 }

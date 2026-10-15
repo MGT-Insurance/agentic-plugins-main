@@ -45,7 +45,7 @@ Promote never touches `.github/` in the production repositories: it keeps what i
 - `exclude`: paths that stay out of the target.
 - `move` (optional): renames a promoted file. The `chatgpt-plugins` target moves `chatgpt/README.md` to the repository root.
 - `notice` (optional): the generated-file notice that the script prepends to the listed files.
-- `zip` (optional): builds the ChatGPT plugin ZIP from the promoted `source` folder into `output`.
+- `zipCheck` (optional): builds the ChatGPT plugin ZIP from the promoted `source` folder into a temporary directory and discards it, so promote fails before it writes anything if the plugin can't be zipped. Promote doesn't write a ZIP. `MGT-Insurance/chatgpt-plugins` builds and releases it with its own `.github/workflows/release.yml`, which you edit by hand there.
 - Text between `<!-- main-only:start -->` and `<!-- main-only:end -->` lines is removed from production.
 
 The script fails if a `from` string appears nowhere in the target's files (stale mapping) or still appears in the output (a main value would leak into production). When you add a main-only value to a plugin, add its production value to the matching target's `replacements` in the same pull request.

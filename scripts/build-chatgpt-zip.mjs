@@ -4,8 +4,8 @@
 // Zips the CONTENTS of a ChatGPT plugin folder (for example chatgpt/mgt-quoting) so that
 // plugin.json sits at the ZIP root, which is what OpenAI's plugin portal requires.
 // The ZIP is deterministic: files are sorted and carry a fixed timestamp, so the same
-// input produces the same bytes and promote doesn't commit a new ZIP for an unchanged plugin.
-// promote/promote.mjs imports buildChatgptZip so CI and promote share one implementation.
+// input produces the same bytes. The release workflow in MGT-Insurance/chatgpt-plugins runs
+// this script, and promote/promote.mjs imports buildChatgptZip to check that a plugin zips.
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';

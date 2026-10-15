@@ -1,11 +1,11 @@
 # MGT Quoting
 
-MGT Quoting lets Claude draft commercial insurance quotes with MGT Insurance. Claude checks whether MGT writes a business, picks the right classification, and creates and edits draft quotes for MGT products such as Business Owner Policy, specialty general liability, specialty property, and farm.
+MGT Quoting is for insurance agents who quote small-business commercial insurance with MGT Insurance. Claude checks whether MGT writes a business, picks the right classification, and creates and edits quotes for MGT products such as Business Owner Policy, specialty general liability, specialty property, and farm.
 
 ## Important limits
 
-- **Claude drafts, and results can be wrong.** Claude is an AI model. Classifications, field values, and summaries can contain mistakes.
-- **A licensed person reviews every quote.** Treat each quote as a draft until a licensed person at your agency has checked it.
+- **Results can be wrong.** Claude is an AI model. Classifications, field values, and summaries can contain mistakes.
+- **A licensed person reviews every quote.** A licensed person at your agency must check each quote before anyone binds coverage.
 - **Binding happens in Shadowfax, not in Claude.** Shadowfax is MGT's agent portal. This plugin never binds coverage.
 
 ## Who can use it
@@ -53,7 +53,7 @@ If your account belongs to several agencies, you don't choose one when you sign 
 
 ## Where your data goes
 
-When you use this plugin, the details you give Claude about a quote go to MGT Insurance's systems through the MGT MCP server at `https://mcp-main.mgtinsurance.ai`. That includes the business name and address, description of operations, classification codes, coverage choices, effective date, and your account email so MGT can attribute the quote to you. MGT stores the draft quotes you create. Don't give Claude data that a quote doesn't need.
+When you use this plugin, the details you give Claude about a quote go to MGT Insurance's systems through the MGT MCP server at `https://mcp-main.mgtinsurance.ai`. That includes the business name and address, description of operations, classification codes, coverage choices, effective date, and your account email so MGT can attribute the quote to you. MGT stores the quotes you create. Don't give Claude data that a quote doesn't need.
 
 ## Support and license
 
