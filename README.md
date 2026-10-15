@@ -36,17 +36,19 @@ To promote locally, see [`CLAUDE.md`](CLAUDE.md).
 
 ## ChatGPT plugin
 
-`chatgpt/mgt-quoting/` is the ChatGPT version of the MGT Quoting plugin (`mgt-quoting-main`, shown as **MGT Quoting (main)**). It points at the main MCP server and signs in with the dev "Mithril MCP (external testers)" Auth0 app. That app is a public client, so the main plugin needs no client secret. Production uses the "ChatGPT directory" app instead, whose client secret lives only in OpenAI's plugin portal, never in this repository.
+`chatgpt/mgt-quoting/` is the ChatGPT version of the MGT Quoting plugin (`mgt-quoting-main`, shown as **MGT Quoting (main)**). It points at the main MCP server and signs in with the dev "Mithril MCP (external testers)" Auth0 app. That app is a public client, so the main plugin needs no client secret. Production uses the "ChatGPT directory" app instead, whose client secret you enter in OpenAI's plugin portal and never store in this repository.
+
+The plugin folder uses the layout that signed in during testing: `.codex-plugin/plugin.json` (the manifest) and `.mcp.json` (the MCP server and OAuth settings). The `oauth` block in `.mcp.json` holds only the Auth0 `client_id`.
 
 The skill and logo that both plugins ship live once in `shared/mgt-quoting/`. After you change a file there, run `node scripts/sync-shared.mjs` and commit the copies. CI runs `node scripts/sync-shared.mjs --check` and fails when a copy drifts.
 
-The **plugin-checks** workflow builds `mgt-quoting-main.zip` from `chatgpt/mgt-quoting/` and uploads it as a workflow artifact. `plugin.json` sits at the ZIP root, which is what OpenAI's portal requires. To build it locally:
+The **plugin-checks** workflow builds `mgt-quoting-main.zip` from `chatgpt/mgt-quoting/` and uploads it as a workflow artifact. `.codex-plugin/plugin.json` and `.mcp.json` sit at the ZIP root. To build it locally:
 
 ```bash
 node scripts/build-chatgpt-zip.mjs chatgpt/mgt-quoting mgt-quoting-main.zip
 ```
 
-To test the ZIP in ChatGPT, upload it in OpenAI's plugin portal (**Plugins** > **Upload new or existing plugin**). Alternatively, in ChatGPT choose **Plugins** > **+** > **Add custom MCP server**, enter the MCP server URL from `chatgpt/mgt-quoting/mcp.json`, and choose **Create as a plugin**.
+To test the ZIP in ChatGPT, upload it in OpenAI's plugin portal (**Plugins** > **Upload new or existing plugin**). Alternatively, in ChatGPT choose **Plugins** > **+** > **Add custom MCP server**, enter the MCP server URL from `chatgpt/mgt-quoting/.mcp.json`, and choose **Create as a plugin**.
 
 <!-- main-only:end -->
 ## Add the marketplace

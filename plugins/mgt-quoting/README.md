@@ -10,7 +10,7 @@ MGT Quoting is for insurance agents who quote small-business commercial insuranc
 
 ## Who can use it
 
-Accounts outside MGT that hold the `quote:create` access granted by MGT. If you can't see the quoting tools after you sign in, ask your MGT contact to check your access.
+Accounts that can quote on the MGT platform. If you can't see the quoting tools after you sign in, ask your MGT contact to check your access.
 
 ## Install
 
