@@ -2,7 +2,7 @@
 // Usage: node promote/promote.mjs <main-repo-dir> <target-name> <target-checkout-dir>
 //
 // Replaces a production checkout's content with the main tree, filtered and transformed by
-// one entry of "targets" in promote/production.json. The checkout's .git directory is kept.
+// one entry of "targets" in promote/production.json. The checkout's .git and .github directories are kept, and nothing under .github/ is promoted.
 // The script checks everything before it touches the checkout directory. Run it once per target.
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
@@ -32,6 +32,8 @@ if (!target) {
 
 const replacements = [...target.replacements].sort((a, b) => b.from.length - a.from.length);
 const matchesRule = (path, rule) => (rule.endsWith('/') ? path.startsWith(rule) : path === rule);
+// Production workflows are edited by hand: a deploy key can't push a change under .github/workflows.
+const KEPT_ENTRIES = new Set(['.git', '.github']);
 const isIncluded = (path) => !target.include || target.include.some((rule) => matchesRule(path, rule));
 const isExcluded = (path) => (target.exclude ?? []).some((rule) => matchesRule(path, rule));
 
@@ -42,7 +44,7 @@ const files = execFileSync(
 )
   .toString('utf8')
   .split('\0')
-  .filter((path) => path && existsSync(join(mainDir, path)) && isIncluded(path) && !isExcluded(path));
+  .filter((path) => path && existsSync(join(mainDir, path)) && !path.startsWith('.github/') && isIncluded(path) && !isExcluded(path));
 
 const isText = (buffer) => !buffer.includes(0);
 const output = new Map(); // path -> Buffer
@@ -103,7 +105,7 @@ if (target.zip && !output.has(`${target.zip.source}/plugin.json`)) {
 }
 
 for (const entry of readdirSync(prodDir)) {
-  if (entry !== '.git') rmSync(join(prodDir, entry), { recursive: true, force: true });
+  if (!KEPT_ENTRIES.has(entry)) rmSync(join(prodDir, entry), { recursive: true, force: true });
 }
 for (const [path, buffer] of output) {
   mkdirSync(dirname(join(prodDir, path)), { recursive: true });

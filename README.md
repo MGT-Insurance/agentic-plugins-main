@@ -30,6 +30,8 @@ Nobody commits to `MGT-Insurance/claude-plugins`. A maintainer runs the **promot
 2. Validates the result and checks that each changed plugin has a higher version than production.
 3. Commits each result to its production repository, unless you ran it with `dry_run` on. The ChatGPT target is skipped with a message when its deploy key isn't configured.
 
+Promote never touches `.github/` in the production repositories, so edit production workflows by hand.
+
 To promote locally, see [`CLAUDE.md`](CLAUDE.md).
 
 ## ChatGPT plugin

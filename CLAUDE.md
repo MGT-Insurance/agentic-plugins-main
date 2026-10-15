@@ -35,6 +35,8 @@ node promote/promote.mjs . claude-plugins ../claude-plugins
 node promote/promote.mjs . chatgpt-plugins ../chatgpt-plugins
 ```
 
+Promote never touches `.github/` in the production repositories: it keeps what is there and publishes nothing under `.github/` from this repository. Edit production workflows by hand.
+
 `promote/production.json` is the only place that lists main-to-production differences. Its `targets` list has one entry per production repository, and each entry has:
 
 - `replacements`: plain string replacements applied to every text file. The script applies the longest `from` first, so list a value once and don't worry about prefixes.
