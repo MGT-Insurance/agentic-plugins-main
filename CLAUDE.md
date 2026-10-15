@@ -41,6 +41,7 @@ node promote/promote.mjs . chatgpt-plugins ../chatgpt-plugins
 - `forbid`: substrings that must not appear in the output, to catch a main value that has no `replacements` entry.
 - `include` (optional): the only paths the target receives.
 - `exclude`: paths that stay out of the target.
+- `move` (optional): renames a promoted file. The `chatgpt-plugins` target moves `chatgpt/README.md` to the repository root.
 - `notice` (optional): the generated-file notice that the script prepends to the listed files.
 - `zip` (optional): builds the ChatGPT plugin ZIP from the promoted `source` folder into `output`.
 - Text between `<!-- main-only:start -->` and `<!-- main-only:end -->` lines is removed from production.

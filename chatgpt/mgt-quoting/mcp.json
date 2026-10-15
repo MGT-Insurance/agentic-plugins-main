@@ -10,7 +10,7 @@
             "type": "oauth",
             "client": {
               "mode": "provided",
-              "clientId": "CHATGPT_DEV_CLIENT_ID_PLACEHOLDER",
+              "clientId": "MRm8fusw4ND9Gv8znVfDW6P0zuX4N8fs",
               "tokenEndpointAuthMethod": "client_secret_post"
             },
             "authorizationUrl": "https://mgt-dev.us.auth0.com/authorize",

@@ -64,6 +64,12 @@ for (const path of files) {
   output.set(path, Buffer.from(kept.replace(swapPattern, (match) => swapTo.get(match)), 'utf8'));
 }
 
+for (const { from, to } of target.move ?? []) {
+  if (!output.has(from)) fail(`[${targetName}] move source ${from} is not in the output`);
+  output.set(to, output.get(from));
+  output.delete(from);
+}
+
 const stale = replacements.filter(({ from }) => !seen.has(from));
 if (stale.length) {
   fail(
