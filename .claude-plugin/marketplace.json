@@ -8,7 +8,7 @@
     {
       "name": "mgt-quoting",
       "source": "./plugins/mgt-quoting",
-      "description": "Quote MGT commercial insurance products from Claude through MGT's quoting tools."
+      "description": "For insurance agents: quote MGT small-business commercial insurance from Claude through MGT's quoting tools."
     }
   ]
 }

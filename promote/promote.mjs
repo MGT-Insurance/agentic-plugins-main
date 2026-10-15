@@ -5,7 +5,8 @@
 // one entry of "targets" in promote/production.json. The checkout's .git and .github directories are kept, and nothing under .github/ is promoted.
 // The script checks everything before it touches the checkout directory. Run it once per target.
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -100,8 +101,27 @@ if (target.notice) {
   }
 }
 
-if (target.zip && !output.has(`${target.zip.source}/plugin.json`)) {
-  fail(`[${targetName}] zip source ${target.zip.source} has no plugin.json in the output`);
+// The production repository builds and releases the ZIP itself. This check builds it once in a temporary
+// directory and discards it, so a plugin that can't be zipped fails here, before the checkout is touched.
+if (target.zipCheck) {
+  const { source } = target.zipCheck;
+  if (!output.has(`${source}/plugin.json`)) fail(`[${targetName}] zip source ${source} has no plugin.json in the output`);
+  if (!output.has('scripts/build-chatgpt-zip.mjs')) fail(`[${targetName}] scripts/build-chatgpt-zip.mjs is not in the output`);
+  const scratch = mkdtempSync(join(tmpdir(), 'promote-zip-'));
+  try {
+    for (const [path, buffer] of output) {
+      if (!path.startsWith(`${source}/`)) continue;
+      mkdirSync(dirname(join(scratch, 'plugin', path)), { recursive: true });
+      writeFileSync(join(scratch, 'plugin', path), buffer);
+    }
+    const { buildChatgptZip } = await import(pathToFileURL(join(mainDir, 'scripts/build-chatgpt-zip.mjs')).href);
+    const names = buildChatgptZip(join(scratch, 'plugin', source), join(scratch, 'check.zip'));
+    console.log(`promote: [${targetName}] ZIP check built ${names.length} files`);
+  } catch (error) {
+    fail(`[${targetName}] the plugin can't be zipped: ${error.message}`);
+  } finally {
+    rmSync(scratch, { recursive: true, force: true });
+  }
 }
 
 for (const entry of readdirSync(prodDir)) {
@@ -112,9 +132,3 @@ for (const [path, buffer] of output) {
   writeFileSync(join(prodDir, path), buffer);
 }
 console.log(`promote: [${targetName}] wrote ${output.size} files to ${prodDir}`);
-
-if (target.zip) {
-  const { buildChatgptZip } = await import(pathToFileURL(join(mainDir, 'scripts/build-chatgpt-zip.mjs')).href);
-  const names = buildChatgptZip(join(prodDir, target.zip.source), join(prodDir, target.zip.output));
-  console.log(`promote: [${targetName}] built ${target.zip.output} (${names.length} files)`);
-}
