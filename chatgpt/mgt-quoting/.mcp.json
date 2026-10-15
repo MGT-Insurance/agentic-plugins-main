@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "mgt-quoting": {
+      "url": "https://mcp-main.mgtinsurance.ai/api/typescript-tools/mcp",
+      "auth": "oauth",
+      "oauth": {
+        "client_id": "PgfG9swLIYKC97zync3O2wVyAGVYv8Of",
+        "callback_port": 14551,
+        "callback_url": "http://127.0.0.1:14551/callback"
+      },
+      "scopes": [
+        "openid",
+        "email",
+        "profile",
+        "offline_access"
+      ]
+    }
+  }
+}

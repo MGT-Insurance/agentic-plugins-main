@@ -105,7 +105,9 @@ if (target.notice) {
 // directory and discards it, so a plugin that can't be zipped fails here, before the checkout is touched.
 if (target.zipCheck) {
   const { source } = target.zipCheck;
-  if (!output.has(`${source}/plugin.json`)) fail(`[${targetName}] zip source ${source} has no plugin.json in the output`);
+  if (!output.has(`${source}/.codex-plugin/plugin.json`)) {
+    fail(`[${targetName}] zip source ${source} has no .codex-plugin/plugin.json in the output`);
+  }
   if (!output.has('scripts/build-chatgpt-zip.mjs')) fail(`[${targetName}] scripts/build-chatgpt-zip.mjs is not in the output`);
   const scratch = mkdtempSync(join(tmpdir(), 'promote-zip-'));
   try {

@@ -28,17 +28,14 @@
       "repo": "MGT-Insurance/chatgpt-plugins",
       "include": ["chatgpt/", ".agents/", "scripts/build-chatgpt-zip.mjs"],
       "replacements": [
-        { "from": "MGT-Insurance/agentic-plugins-main", "to": "MGT-Insurance/chatgpt-plugins" },
         { "from": "mgt-insurance-chatgpt-main", "to": "mgt-insurance-chatgpt" },
         { "from": "mgt-quoting-main", "to": "mgt-quoting" },
         { "from": "mcp-main.mgtinsurance.ai", "to": "mcp.mgtinsurance.ai" },
-        { "from": "mgt-dev.us.auth0.com", "to": "mgtinsurance.us.auth0.com" },
         { "from": "PgfG9swLIYKC97zync3O2wVyAGVYv8Of", "to": "9WnOC4MCXwK1jDZ5bgop9iW1tOjdLHdN" },
-        { "from": "\"tokenEndpointAuthMethod\": \"none\"", "to": "\"tokenEndpointAuthMethod\": \"client_secret_post\"" },
         { "from": "MGT Quoting (main)", "to": "MGT Quoting" },
         { "from": "MGT Insurance (main)", "to": "MGT Insurance" }
       ],
-      "forbid": ["-main", "(main)", "mgt-dev", "PgfG9swLIYKC97zync3O2wVyAGVYv8Of", "\"none\""],
+      "forbid": ["-main", "(main)", "mgt-dev", "PgfG9swLIYKC97zync3O2wVyAGVYv8Of"],
       "move": [{ "from": "chatgpt/README.md", "to": "README.md" }],
       "notice": {
         "file": "promote/production-notice.md",

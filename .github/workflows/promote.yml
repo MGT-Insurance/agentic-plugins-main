@@ -115,7 +115,7 @@ jobs:
             if ! printf '%s\n' "$changed" | grep -q "^chatgpt/${name}/"; then
               continue
             fi
-            manifest="chatgpt/${name}/plugin.json"
+            manifest="chatgpt/${name}/.codex-plugin/plugin.json"
             if ! git cat-file -e "HEAD:${manifest}" 2>/dev/null; then
               echo "${name}: new plugin, no version check"
               continue
