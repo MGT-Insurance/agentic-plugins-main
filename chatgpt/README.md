@@ -16,7 +16,11 @@ This repository publishes MGT Insurance's ChatGPT plugins. Each plugin lives in 
 2. In OpenAI's plugin portal, choose **Plugins** > **Upload new or existing plugin**.
 3. Upload the ZIP and follow the portal's checks.
 
-The plugin signs in with MGT's Auth0 app. The app's client secret is entered in the portal and never stored in this repository.
+The plugin signs in with MGT's Auth0 app. If the app has a client secret, enter it in the portal and never store it in this repository.
+
+<!-- main-only:start -->
+The main plugin signs in with a public Auth0 client that has no secret, so leave the portal's client secret empty for the main ZIP.
+<!-- main-only:end -->
 
 ## Important limits
 
