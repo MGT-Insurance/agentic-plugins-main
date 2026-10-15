@@ -8,7 +8,6 @@
         ".agents/",
         "shared/",
         "scripts/",
-        ".github/workflows/promote.yml",
         "promote/"
       ],
       "replacements": [
