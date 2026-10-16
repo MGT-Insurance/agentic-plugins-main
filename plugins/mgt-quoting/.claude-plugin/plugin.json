@@ -1,6 +1,6 @@
 {
   "name": "mgt-quoting",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "displayName": "MGT Quoting (main)",
   "description": "For insurance agents: quote MGT small-business commercial insurance from Claude. Check appetite, classify the business, and create and edit quotes.",
   "author": {
@@ -13,6 +13,6 @@
   "icon": "./assets/icon.png",
   "documentationUrl": "https://github.com/MGT-Insurance/agentic-plugins-main/tree/main/plugins/mgt-quoting",
   "supportUrl": "https://www.mgtinsurance.com",
-  "privacyPolicyUrl": "https://www.mgtinsurance.com",
-  "termsOfServiceUrl": "https://www.mgtinsurance.com"
+  "privacyPolicyUrl": "https://www.mgtinsurance.com/privacy-policy",
+  "termsOfServiceUrl": "https://www.mgtinsurance.com/terms-conditions"
 }
