@@ -36,24 +36,26 @@ To promote locally, see [`CLAUDE.md`](CLAUDE.md).
 
 ## ChatGPT plugin
 
-`chatgpt/mgt-quoting/` is the ChatGPT version of the MGT Quoting plugin (`mgt-quoting-main`, shown as **MGT Quoting (main)**). It points at the main MCP server and ships in two formats from one folder:
+`chatgpt/mgt-quoting/` is the ChatGPT version of the MGT Quoting plugin (`mgt-quoting-main`, shown as **MGT Quoting (main)**). It points at the main MCP server and ships in two formats:
 
-| Format | Manifests | Auth0 client in main |
-|---|---|---|
-| Portal upload | `plugin.json` and `mcp.json` | Dev "ChatGPT directory" app. You enter its client secret in OpenAI's plugin portal. |
-| ChatGPT desktop | `.codex-plugin/plugin.json` and `.mcp.json` | Dev "Mithril MCP (external testers)" app, a public client with no secret. The sign-in callback is `http://127.0.0.1:14551/callback`. |
+| Format | Manifests | Where they live | Auth0 client in main |
+|---|---|---|---|
+| Portal upload | `plugin.json` and `mcp.json` | `chatgpt/mgt-quoting-upload/` | Dev "ChatGPT directory" app. You enter its client secret in OpenAI's plugin portal. |
+| ChatGPT desktop | `.codex-plugin/plugin.json` and `.mcp.json` | `chatgpt/mgt-quoting/` | Dev "Mithril MCP (external testers)" app, a public client with no secret. The sign-in callback is `http://127.0.0.1:14551/callback`. |
+
+The portal manifests live outside the plugin folder because a root `plugin.json` or `mcp.json` in `chatgpt/mgt-quoting/` stops ChatGPT desktop and Codex from registering the MCP server when you install the plugin from a marketplace. The build fails if either file appears there.
 
 The `.mcp.json` oauth block holds the Auth0 `client_id` and the loopback callback, and `mcp.json` holds the `clientId`. No client secret is stored in this repository.
 
 The skill and logo that both plugins ship live once in `shared/mgt-quoting/`. After you change a file there, run `node scripts/sync-shared.mjs` and commit the copies. CI runs `node scripts/sync-shared.mjs --check` and fails when a copy drifts.
 
-The **plugin-checks** workflow builds `mgt-quoting-main-upload.zip` and `mgt-quoting-main-desktop.zip` from `chatgpt/mgt-quoting/` and uploads both as workflow artifacts. The upload ZIP has `plugin.json` and `mcp.json` at its root, and the desktop ZIP has `.codex-plugin/plugin.json` and `.mcp.json` at its root. The build fails when the two manifest sets drift, and the workflow validates `plugin.json` against the Agent Plugins schema in `scripts/schemas/`. To build both ZIPs locally:
+The **plugin-checks** workflow builds `mgt-quoting-main-upload.zip` and `mgt-quoting-main-desktop.zip` from `chatgpt/mgt-quoting/` and `chatgpt/mgt-quoting-upload/` and uploads both as workflow artifacts. The upload ZIP has `plugin.json` and `mcp.json` at its root, and the desktop ZIP has `.codex-plugin/plugin.json` and `.mcp.json` at its root. The build fails when the two manifest sets drift, and the workflow validates `plugin.json` against the Agent Plugins schema in `scripts/schemas/`. To build both ZIPs locally:
 
 ```bash
 node scripts/build-chatgpt-zip.mjs chatgpt/mgt-quoting dist
 ```
 
-To test the upload ZIP, upload it in OpenAI's plugin portal (**Plugins** > **Upload new or existing plugin**). To test the desktop ZIP, install it in ChatGPT desktop.
+To test the upload ZIP, upload it in OpenAI's plugin portal (**Plugins** > **Upload new or existing plugin**). To test the desktop plugin, add this repository as a marketplace in ChatGPT desktop with the source `MGT-Insurance/agentic-plugins-main` and install **MGT Quoting (main)**, or install the desktop ZIP.
 
 <!-- main-only:end -->
 ## Add the marketplace

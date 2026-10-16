@@ -105,14 +105,15 @@ if (target.notice) {
 // directory and discards it, so a plugin that can't be zipped fails here, before the checkout is touched.
 if (target.zipCheck) {
   const { source } = target.zipCheck;
-  for (const manifest of ['plugin.json', '.codex-plugin/plugin.json']) {
-    if (!output.has(`${source}/${manifest}`)) fail(`[${targetName}] zip source ${source} has no ${manifest} in the output`);
+  // The portal manifests live in the sibling <source>-upload folder, outside the plugin folder.
+  for (const manifest of [`${source}-upload/plugin.json`, `${source}/.codex-plugin/plugin.json`]) {
+    if (!output.has(manifest)) fail(`[${targetName}] zip source ${source} has no ${manifest} in the output`);
   }
   if (!output.has('scripts/build-chatgpt-zip.mjs')) fail(`[${targetName}] scripts/build-chatgpt-zip.mjs is not in the output`);
   const scratch = mkdtempSync(join(tmpdir(), 'promote-zip-'));
   try {
     for (const [path, buffer] of output) {
-      if (!path.startsWith(`${source}/`)) continue;
+      if (!path.startsWith(`${source}/`) && !path.startsWith(`${source}-upload/`)) continue;
       mkdirSync(dirname(join(scratch, 'plugin', path)), { recursive: true });
       writeFileSync(join(scratch, 'plugin', path), buffer);
     }

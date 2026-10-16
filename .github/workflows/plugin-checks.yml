@@ -35,14 +35,14 @@ jobs:
         if: ${{ hashFiles('scripts/sync-shared.mjs') != '' }}
         run: node scripts/sync-shared.mjs --check
 
-      # The root plugin.json is the upload manifest, so it holds the ZIP base name. The build fails when it drifts from .codex-plugin/plugin.json.
+      # chatgpt/mgt-quoting-upload/plugin.json is the upload manifest, so it holds the ZIP base name. The build fails when it drifts from chatgpt/mgt-quoting/.codex-plugin/plugin.json.
       - name: Build the ChatGPT plugin ZIPs
         id: zip
         if: ${{ hashFiles('scripts/build-chatgpt-zip.mjs') != '' }}
         run: |
           set -euo pipefail
           node scripts/build-chatgpt-zip.mjs chatgpt/mgt-quoting dist
-          base="$(jq -r .name chatgpt/mgt-quoting/plugin.json)"
+          base="$(jq -r .name chatgpt/mgt-quoting-upload/plugin.json)"
           unzip -l "dist/${base}-upload.zip"
           unzip -l "dist/${base}-desktop.zip"
           echo "upload=${base}-upload.zip" >> "$GITHUB_OUTPUT"
@@ -69,7 +69,7 @@ jobs:
         if: ${{ hashFiles('scripts/schemas/plugin.schema.json') != '' }}
         run: |
           set -euo pipefail
-          npx -y ajv-cli@5.0.0 validate --spec=draft2020 -s scripts/schemas/plugin.schema.json -d chatgpt/mgt-quoting/plugin.json
+          npx -y ajv-cli@5.0.0 validate --spec=draft2020 -s scripts/schemas/plugin.schema.json -d chatgpt/mgt-quoting-upload/plugin.json
 
       - name: Require a version bump for changed ChatGPT plugins
         if: ${{ hashFiles('chatgpt/*/.codex-plugin/plugin.json') != '' }}
@@ -79,7 +79,9 @@ jobs:
           status=0
           for dir in chatgpt/*/; do
             name="$(basename "$dir")"
-            if ! printf '%s\n' "$changed" | grep -q "^chatgpt/${name}/"; then
+            # chatgpt/<name>-upload/ holds the portal manifests for <name>, so a change there counts as a change to <name>.
+            case "$name" in *-upload) continue ;; esac
+            if ! printf '%s\n' "$changed" | grep -Eq "^chatgpt/${name}(-upload)?/"; then
               continue
             fi
             manifest="chatgpt/${name}/.codex-plugin/plugin.json"
