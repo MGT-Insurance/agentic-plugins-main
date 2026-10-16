@@ -112,7 +112,9 @@ jobs:
           status=0
           for dir in chatgpt/*/; do
             name="$(basename "$dir")"
-            if ! printf '%s\n' "$changed" | grep -q "^chatgpt/${name}/"; then
+            # chatgpt/<name>-upload/ holds the portal manifests for <name>, so a change there counts as a change to <name>.
+            case "$name" in *-upload) continue ;; esac
+            if ! printf '%s\n' "$changed" | grep -Eq "^chatgpt/${name}(-upload)?/"; then
               continue
             fi
             manifest="chatgpt/${name}/.codex-plugin/plugin.json"
