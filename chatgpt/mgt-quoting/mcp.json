@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "mgt-quoting": {
+      "type": "streamable-http",
+      "url": "https://mcp-main.mgtinsurance.ai/api/typescript-tools/mcp",
+      "extensions": {
+        "com.openai": {
+          "auth": {
+            "type": "oauth",
+            "client": {
+              "mode": "provided",
+              "clientId": "MRm8fusw4ND9Gv8znVfDW6P0zuX4N8fs"
+            },
+            "defaultScopes": [
+              "openid",
+              "email",
+              "profile",
+              "offline_access"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
