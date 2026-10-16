@@ -31,11 +31,12 @@
         { "from": "mgt-insurance-chatgpt-main", "to": "mgt-insurance-chatgpt" },
         { "from": "mgt-quoting-main", "to": "mgt-quoting" },
         { "from": "mcp-main.mgtinsurance.ai", "to": "mcp.mgtinsurance.ai" },
-        { "from": "PgfG9swLIYKC97zync3O2wVyAGVYv8Of", "to": "9WnOC4MCXwK1jDZ5bgop9iW1tOjdLHdN" },
+        { "from": "PgfG9swLIYKC97zync3O2wVyAGVYv8Of", "to": "ZEUCslSe3WibS2uYFWisSJtSemw9Y4tr" },
+        { "from": "MRm8fusw4ND9Gv8znVfDW6P0zuX4N8fs", "to": "9WnOC4MCXwK1jDZ5bgop9iW1tOjdLHdN" },
         { "from": "MGT Quoting (main)", "to": "MGT Quoting" },
         { "from": "MGT Insurance (main)", "to": "MGT Insurance" }
       ],
-      "forbid": ["-main", "(main)", "mgt-dev", "PgfG9swLIYKC97zync3O2wVyAGVYv8Of"],
+      "forbid": ["-main", "(main)", "mgt-dev", "PgfG9swLIYKC97zync3O2wVyAGVYv8Of", "MRm8fusw4ND9Gv8znVfDW6P0zuX4N8fs"],
       "move": [{ "from": "chatgpt/README.md", "to": "README.md" }],
       "notice": {
         "file": "promote/production-notice.md",

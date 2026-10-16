@@ -35,25 +35,41 @@ jobs:
         if: ${{ hashFiles('scripts/sync-shared.mjs') != '' }}
         run: node scripts/sync-shared.mjs --check
 
-      # The ZIP is named after the plugin's `name` in .codex-plugin/plugin.json.
-      - name: Build the ChatGPT plugin ZIP
+      # The root plugin.json is the upload manifest, so it holds the ZIP base name. The build fails when it drifts from .codex-plugin/plugin.json.
+      - name: Build the ChatGPT plugin ZIPs
         id: zip
         if: ${{ hashFiles('scripts/build-chatgpt-zip.mjs') != '' }}
         run: |
           set -euo pipefail
-          mkdir -p dist
-          zip_name="$(jq -r .name chatgpt/mgt-quoting/.codex-plugin/plugin.json).zip"
-          node scripts/build-chatgpt-zip.mjs chatgpt/mgt-quoting "dist/${zip_name}"
-          unzip -l "dist/${zip_name}"
-          echo "name=${zip_name}" >> "$GITHUB_OUTPUT"
+          node scripts/build-chatgpt-zip.mjs chatgpt/mgt-quoting dist
+          base="$(jq -r .name chatgpt/mgt-quoting/plugin.json)"
+          unzip -l "dist/${base}-upload.zip"
+          unzip -l "dist/${base}-desktop.zip"
+          echo "upload=${base}-upload.zip" >> "$GITHUB_OUTPUT"
+          echo "desktop=${base}-desktop.zip" >> "$GITHUB_OUTPUT"
 
-      - name: Upload the ChatGPT plugin ZIP
+      - name: Upload the ChatGPT upload ZIP
         if: ${{ hashFiles('scripts/build-chatgpt-zip.mjs') != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.zip.outputs.name }}
-          path: dist/${{ steps.zip.outputs.name }}
+          name: ${{ steps.zip.outputs.upload }}
+          path: dist/${{ steps.zip.outputs.upload }}
           if-no-files-found: error
+
+      - name: Upload the ChatGPT desktop ZIP
+        if: ${{ hashFiles('scripts/build-chatgpt-zip.mjs') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.zip.outputs.desktop }}
+          path: dist/${{ steps.zip.outputs.desktop }}
+          if-no-files-found: error
+
+      # mcp.json is not validated here: its schema forbids the OpenAI `extensions` block that the portal requires.
+      - name: Validate the ChatGPT upload manifest against the Agent Plugins schema
+        if: ${{ hashFiles('scripts/schemas/plugin.schema.json') != '' }}
+        run: |
+          set -euo pipefail
+          npx -y ajv-cli@5.0.0 validate --spec=draft2020 -s scripts/schemas/plugin.schema.json -d chatgpt/mgt-quoting/plugin.json
 
       - name: Require a version bump for changed ChatGPT plugins
         if: ${{ hashFiles('chatgpt/*/.codex-plugin/plugin.json') != '' }}

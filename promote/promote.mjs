@@ -105,8 +105,8 @@ if (target.notice) {
 // directory and discards it, so a plugin that can't be zipped fails here, before the checkout is touched.
 if (target.zipCheck) {
   const { source } = target.zipCheck;
-  if (!output.has(`${source}/.codex-plugin/plugin.json`)) {
-    fail(`[${targetName}] zip source ${source} has no .codex-plugin/plugin.json in the output`);
+  for (const manifest of ['plugin.json', '.codex-plugin/plugin.json']) {
+    if (!output.has(`${source}/${manifest}`)) fail(`[${targetName}] zip source ${source} has no ${manifest} in the output`);
   }
   if (!output.has('scripts/build-chatgpt-zip.mjs')) fail(`[${targetName}] scripts/build-chatgpt-zip.mjs is not in the output`);
   const scratch = mkdtempSync(join(tmpdir(), 'promote-zip-'));
@@ -116,9 +116,11 @@ if (target.zipCheck) {
       mkdirSync(dirname(join(scratch, 'plugin', path)), { recursive: true });
       writeFileSync(join(scratch, 'plugin', path), buffer);
     }
-    const { buildChatgptZip } = await import(pathToFileURL(join(mainDir, 'scripts/build-chatgpt-zip.mjs')).href);
-    const names = buildChatgptZip(join(scratch, 'plugin', source), join(scratch, 'check.zip'));
-    console.log(`promote: [${targetName}] ZIP check built ${names.length} files`);
+    const { buildChatgptZips } = await import(pathToFileURL(join(mainDir, 'scripts/build-chatgpt-zip.mjs')).href);
+    const zips = buildChatgptZips(join(scratch, 'plugin', source), join(scratch, 'zips'));
+    console.log(
+      `promote: [${targetName}] ZIP check built ${zips.upload.length} upload files and ${zips.desktop.length} desktop files`,
+    );
   } catch (error) {
     fail(`[${targetName}] the plugin can't be zipped: ${error.message}`);
   } finally {

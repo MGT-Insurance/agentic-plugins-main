@@ -26,7 +26,7 @@ claude plugin uninstall mgt-quoting@mgt-insurance
 
 Nobody commits to `MGT-Insurance/claude-plugins`. A maintainer runs the **promote** workflow here (**Actions** > **promote**) after the matching MCP server release reaches production. The workflow:
 
-1. Generates one production tree per target from this repository by swapping main values for production values, as listed in [`promote/production.json`](promote/production.json). The `claude-plugins` target publishes the Claude plugin. The `chatgpt-plugins` target publishes the ChatGPT plugin. That repository's release workflow builds the ZIP and publishes it as a GitHub release when the plugin version changes.
+1. Generates one production tree per target from this repository by swapping main values for production values, as listed in [`promote/production.json`](promote/production.json). The `claude-plugins` target publishes the Claude plugin. The `chatgpt-plugins` target publishes the ChatGPT plugin. That repository's release workflow builds both ChatGPT ZIPs and publishes them as a GitHub release when the plugin version changes.
 2. Validates the result and checks that each changed plugin has a higher version than production.
 3. Commits each result to its production repository, unless you ran it with `dry_run` on. The ChatGPT target is skipped with a message when its deploy key isn't configured.
 
@@ -36,19 +36,24 @@ To promote locally, see [`CLAUDE.md`](CLAUDE.md).
 
 ## ChatGPT plugin
 
-`chatgpt/mgt-quoting/` is the ChatGPT version of the MGT Quoting plugin (`mgt-quoting-main`, shown as **MGT Quoting (main)**). It points at the main MCP server and signs in with the dev "Mithril MCP (external testers)" Auth0 app. That app is a public client, so the main plugin needs no client secret. Production uses the "ChatGPT directory" app instead, whose client secret you enter in OpenAI's plugin portal and never store in this repository.
+`chatgpt/mgt-quoting/` is the ChatGPT version of the MGT Quoting plugin (`mgt-quoting-main`, shown as **MGT Quoting (main)**). It points at the main MCP server and ships in two formats from one folder:
 
-The plugin folder uses the layout that signed in during testing: `.codex-plugin/plugin.json` (the manifest) and `.mcp.json` (the MCP server and OAuth settings). The `oauth` block in `.mcp.json` holds only the Auth0 `client_id`.
+| Format | Manifests | Auth0 client in main |
+|---|---|---|
+| Portal upload | `plugin.json` and `mcp.json` | Dev "ChatGPT directory" app. You enter its client secret in OpenAI's plugin portal. |
+| ChatGPT desktop | `.codex-plugin/plugin.json` and `.mcp.json` | Dev "Mithril MCP (external testers)" app, a public client with no secret. The sign-in callback is `http://127.0.0.1:14551/callback`. |
+
+The `.mcp.json` oauth block holds the Auth0 `client_id` and the loopback callback, and `mcp.json` holds the `clientId`. No client secret is stored in this repository.
 
 The skill and logo that both plugins ship live once in `shared/mgt-quoting/`. After you change a file there, run `node scripts/sync-shared.mjs` and commit the copies. CI runs `node scripts/sync-shared.mjs --check` and fails when a copy drifts.
 
-The **plugin-checks** workflow builds `mgt-quoting-main.zip` from `chatgpt/mgt-quoting/` and uploads it as a workflow artifact. `.codex-plugin/plugin.json` and `.mcp.json` sit at the ZIP root. To build it locally:
+The **plugin-checks** workflow builds `mgt-quoting-main-upload.zip` and `mgt-quoting-main-desktop.zip` from `chatgpt/mgt-quoting/` and uploads both as workflow artifacts. The upload ZIP has `plugin.json` and `mcp.json` at its root, and the desktop ZIP has `.codex-plugin/plugin.json` and `.mcp.json` at its root. The build fails when the two manifest sets drift, and the workflow validates `plugin.json` against the Agent Plugins schema in `scripts/schemas/`. To build both ZIPs locally:
 
 ```bash
-node scripts/build-chatgpt-zip.mjs chatgpt/mgt-quoting mgt-quoting-main.zip
+node scripts/build-chatgpt-zip.mjs chatgpt/mgt-quoting dist
 ```
 
-To test the ZIP in ChatGPT, upload it in OpenAI's plugin portal (**Plugins** > **Upload new or existing plugin**). Alternatively, in ChatGPT choose **Plugins** > **+** > **Add custom MCP server**, enter the MCP server URL from `chatgpt/mgt-quoting/.mcp.json`, and choose **Create as a plugin**.
+To test the upload ZIP, upload it in OpenAI's plugin portal (**Plugins** > **Upload new or existing plugin**). To test the desktop ZIP, install it in ChatGPT desktop.
 
 <!-- main-only:end -->
 ## Add the marketplace
