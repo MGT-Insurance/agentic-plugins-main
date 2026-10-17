@@ -57,6 +57,12 @@ node scripts/build-chatgpt-zip.mjs chatgpt/mgt-quoting dist
 
 To test the upload ZIP, upload it in OpenAI's plugin portal (**Plugins** > **Upload new or existing plugin**). To test the desktop plugin, add this repository as a marketplace in ChatGPT desktop with the source `MGT-Insurance/agentic-plugins-main` and install **MGT Quoting (main)**, or install the desktop ZIP.
 
+## Add the marketplace to a claude.ai organization
+
+claude.ai organization marketplaces accept only private or internal repositories, so an organization can't add this public repository. The `mirror` workflow copies `main` to the private repository [`MGT-Insurance/agentic-plugins-main-private`](https://github.com/MGT-Insurance/agentic-plugins-main-private) on every push. The mirror's marketplace is the same `mgt-insurance-main` marketplace.
+
+To add it, install the Claude GitHub App on `MGT-Insurance/agentic-plugins-main-private`. Then, in claude.ai, go to **Organization settings** > **Plugins & skills** > **Marketplaces** > **Add** and enter that repository. Don't commit to the mirror. The sync is fast-forward only, so a direct commit there stops it.
+
 <!-- main-only:end -->
 ## Add the marketplace
 
