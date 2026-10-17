@@ -1,6 +1,6 @@
 name: mirror
 
-# Copies main to the private repository MGT-Insurance/agentic-plugins-internal.
+# Copies main to the private repository MGT-Insurance/agentic-plugins-main-internal.
 # claude.ai organization marketplaces accept only private or internal repositories, so
 # the enterprise organization adds the mirror instead of this public repository.
 # The push is fast-forward only: if someone commits to the mirror directly, this job
@@ -35,12 +35,12 @@ jobs:
           MIRROR_DEPLOY_KEY: ${{ secrets.MIRROR_DEPLOY_KEY }}
         run: |
           if [ -z "$MIRROR_DEPLOY_KEY" ]; then
-            echo "::error::The MIRROR_DEPLOY_KEY secret is not set. Add a write deploy key to MGT-Insurance/agentic-plugins-internal and store its private key as this secret."
+            echo "::error::The MIRROR_DEPLOY_KEY secret is not set. Add a write deploy key to MGT-Insurance/agentic-plugins-main-internal and store its private key as this secret."
             exit 1
           fi
           key_file="$RUNNER_TEMP/mirror_key"
           printf '%s\n' "$MIRROR_DEPLOY_KEY" > "$key_file"
           chmod 600 "$key_file"
           export GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
-          git push git@github.com:MGT-Insurance/agentic-plugins-internal.git HEAD:refs/heads/main
+          git push git@github.com:MGT-Insurance/agentic-plugins-main-internal.git HEAD:refs/heads/main
           rm -f "$key_file"
