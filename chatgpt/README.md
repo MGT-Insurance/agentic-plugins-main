@@ -52,5 +52,4 @@ The main ZIPs are not released. Download `mgt-quoting-main-upload.zip` and `mgt-
 ## Important limits
 
 - Results can be wrong.
-- A licensed person reviews every quote.
-- Binding happens in Shadowfax, MGT's agent portal, never in ChatGPT.
+- Binding happens in MGT's portal, never in ChatGPT.
