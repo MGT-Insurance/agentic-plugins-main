@@ -1,10 +1,11 @@
 name: mirror
 
-# Copies main to the private repository MGT-Insurance/agentic-plugins-main-internal.
+# Writes a snapshot of main to the private repository MGT-Insurance/agentic-plugins-main-internal.
 # claude.ai organization marketplaces accept only private or internal repositories, so
 # the enterprise organization adds the mirror instead of this public repository.
-# The push is fast-forward only: if someone commits to the mirror directly, this job
-# fails instead of overwriting their commit.
+# Each sync is one commit holding this repository's tree without .github/, because GitHub
+# refuses deploy-key pushes that touch workflow files. Commit IDs differ from this repository.
+# Rulesets on the mirror let only deploy keys write to it.
 
 on:
   push:
@@ -27,10 +28,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
           persist-credentials: false
 
-      - name: Push main to the private mirror
+      - name: Write a snapshot to the private mirror
         env:
           MIRROR_DEPLOY_KEY: ${{ secrets.MIRROR_DEPLOY_KEY }}
         run: |
@@ -42,5 +42,5 @@ jobs:
           printf '%s\n' "$MIRROR_DEPLOY_KEY" > "$key_file"
           chmod 600 "$key_file"
           export GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
-          git push git@github.com:MGT-Insurance/agentic-plugins-main-internal.git HEAD:refs/heads/main
+          scripts/sync-mirror.sh "$GITHUB_WORKSPACE" "$(git rev-parse HEAD)" git@github.com:MGT-Insurance/agentic-plugins-main-internal.git
           rm -f "$key_file"
