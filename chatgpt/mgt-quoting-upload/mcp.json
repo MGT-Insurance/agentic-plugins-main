@@ -1,9 +1,9 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
   "mcpServers": {
-    "mgt-quoting": {
+    "mgt-quoting-main": {
       "type": "streamable-http",
-      "url": "https://mcp-main.mgtinsurance.ai/api/typescript-tools/mcp",
+      "url": "https://mcp-main.mgtinsurance.ai/api/external/mcp",
       "extensions": {
         "com.openai": {
           "auth": {

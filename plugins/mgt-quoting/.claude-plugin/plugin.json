@@ -1,6 +1,6 @@
 {
   "name": "mgt-quoting",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "displayName": "MGT Quoting (main)",
   "description": "For insurance agents: quote MGT small-business commercial insurance from Claude. Check appetite, classify the business, and create and edit quotes.",
   "author": {
