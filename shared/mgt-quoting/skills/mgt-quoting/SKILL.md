@@ -5,7 +5,7 @@ description: Quote MGT small-business commercial insurance products (BOP, specia
 
 # Quote MGT products
 
-Use the `mgt-quoting` MCP server tools to build quotes for MGT small-business commercial insurance products. The user is an insurance agent. Binding happens in MGT's portal, not here. Never tell the user a quote is bound or offer to bind it.
+Use the MGT Quoting MCP server tools to build quotes for MGT small-business commercial insurance products. The user is an insurance agent. Binding happens in MGT's portal, not here. Never tell the user a quote is bound or offer to bind it.
 
 ## Tools
 

@@ -16,7 +16,7 @@ Accounts that can quote on the MGT platform. If you can't see the quoting tools 
 1. Go to **Customize** > **Plugins**.
 2. Find **MGT Quoting** under **Discover**. To install from this repository instead, click **Add** > **Add marketplace** and enter `MGT-Insurance/agentic-plugins-main`.
 3. Install **MGT Quoting**.
-4. Open the plugin's **Connectors** tab, connect `mgt-quoting`, and sign in with your MGT account.
+4. Open the plugin's **Connectors** tab, connect `mgt-quoting-main`, and sign in with your MGT account.
 
 Installing the plugin doesn't sign you in. You sign in once, on the **Connectors** tab. On a Team or Enterprise plan, an Owner might need to add the connector for your organization before you can connect.
 
