@@ -13,6 +13,7 @@
       "replacements": [
         { "from": "MGT-Insurance/agentic-plugins-main", "to": "MGT-Insurance/claude-plugins" },
         { "from": "mgt-insurance-main", "to": "mgt-insurance" },
+        { "from": "mgt-quoting-main", "to": "mgt-quoting" },
         { "from": "mcp-main.mgtinsurance.ai", "to": "mcp.mgtinsurance.ai" },
         { "from": "HgnEBwza09kAszhdXtoEnz6ofrCHrM2v", "to": "uMMqJMAYSADCF3BY9yJqHlzpb1tbNV17" },
         { "from": "MGT Quoting (main)", "to": "MGT Quoting" }

@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "mgt-quoting": {
+    "mgt-quoting-main": {
       "type": "http",
       "url": "https://mcp-main.mgtinsurance.ai/api/external/mcp",
       "oauth": {
