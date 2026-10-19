@@ -5,8 +5,7 @@ MGT Quoting is for insurance agents who quote small-business commercial insuranc
 ## Important limits
 
 - **Results can be wrong.** Claude is an AI model. Classifications, field values, and summaries can contain mistakes.
-- **A licensed person reviews every quote.** A licensed person at your agency must check each quote before anyone binds coverage.
-- **Binding happens in Shadowfax, not in Claude.** Shadowfax is MGT's agent portal. This plugin never binds coverage.
+- **Binding happens in MGT's portal, not in Claude.** This plugin never binds coverage.
 
 ## Who can use it
 
