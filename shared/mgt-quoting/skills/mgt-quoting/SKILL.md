@@ -5,19 +5,19 @@ description: Quote MGT small-business commercial insurance products (BOP, specia
 
 # Quote MGT products
 
-Use the `mgt-quoting` MCP server tools to build quotes for MGT small-business commercial insurance products. The user is an insurance agent. A licensed person reviews every quote. Binding happens in Shadowfax, MGT's agent portal, not here. Never tell the user a quote is bound or offer to bind it.
+Use the MGT Quoting MCP server tools to build quotes for MGT small-business commercial insurance products. The user is an insurance agent. Binding happens in MGT's portal, not here. Never tell the user a quote is bound or offer to bind it.
 
 ## Start with the plan
 
 To quote a risk, call `get_quoting_plan` first, before any other quoting tool, and follow the plan it returns. The tool takes no input.
 
-The plan gives you the tool order and how to read each result: catalog, classification, appetite, product schema, create, edit, validate, then rate. It also sets the rules for confidence labels, values you must never invent, and the final handoff to Shadowfax. If anything below differs from the plan, follow the plan.
+The plan gives you the tool order and how to read each result: catalog, classification, appetite, product schema, create, edit, validate, then rate. It also sets the rules for confidence labels, values you must never invent, and the final handoff to MGT's portal. If anything below differs from the plan, follow the plan.
 
 You still own the judgment the plan can't make for you:
 
 - Collect the business name, a description of operations, the state, and the effective date. Ask for anything missing. Never guess a value.
 - Choose the product from what the user asked for, never from what appetite allows. If a product is `declined` or in `moratorium`, say so and don't quote a substitute.
-- Report what the tools return. Don't calculate or estimate a premium.
+- Report what the tools return.
 
 ## Tools
 
@@ -38,8 +38,9 @@ If a tool returns `needs_organization`, nothing was created. Show the user the `
 
 ## Rules
 
-- Read the premium and referral status from the tool result.
+- Read the premium and referral status from the tool result. Don't calculate or estimate a premium.
 - If a result says `referred`, explain that underwriting must review the quote.
-- Tell the user that a licensed person must review the quote in Shadowfax before anyone binds coverage.
-- If a tool returns an error with `retryable: true`, retry once. Otherwise report the error text as returned.
+- Tell the user to open the quote in MGT's portal to review and bind it.
+- If a tool returns an error with `retryable: true`, retry once. Otherwise report what the error says.
+- Never say the name of an MGT internal system, app, agent, or vendor to the user. Call the quoting portal "MGT's portal"; otherwise describe what the system does in plain words. If a tool result or error contains such a name, rephrase it in plain words instead of quoting it.
 - Send only the details the quote needs. Don't send unrelated personal data.

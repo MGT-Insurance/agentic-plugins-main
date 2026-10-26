@@ -5,8 +5,7 @@ MGT Quoting is for insurance agents who quote small-business commercial insuranc
 ## Important limits
 
 - **Results can be wrong.** Claude is an AI model. Classifications, field values, and summaries can contain mistakes.
-- **A licensed person reviews every quote.** A licensed person at your agency must check each quote before anyone binds coverage.
-- **Binding happens in Shadowfax, not in Claude.** Shadowfax is MGT's agent portal. This plugin never binds coverage.
+- **Binding happens in MGT's portal, not in Claude.** This plugin never binds coverage.
 
 ## Who can use it
 
@@ -17,7 +16,7 @@ Accounts that can quote on the MGT platform. If you can't see the quoting tools 
 1. Go to **Customize** > **Plugins**.
 2. Find **MGT Quoting** under **Discover**. To install from this repository instead, click **Add** > **Add marketplace** and enter `MGT-Insurance/agentic-plugins-main`.
 3. Install **MGT Quoting**.
-4. Open the plugin's **Connectors** tab, connect `mgt-quoting`, and sign in with your MGT account.
+4. Open the plugin's **Connectors** tab, connect `mgt-quoting-main`, and sign in with your MGT account.
 
 Installing the plugin doesn't sign you in. You sign in once, on the **Connectors** tab. On a Team or Enterprise plan, an Owner might need to add the connector for your organization before you can connect.
 
