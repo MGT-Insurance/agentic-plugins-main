@@ -2,7 +2,7 @@
   "name": "mgt-quoting",
   "version": "0.1.13",
   "displayName": "MGT Quoting (main)",
-  "description": "For insurance agents: quote MGT small-business commercial insurance from Claude. Check appetite, classify the business, and create and edit quotes.",
+  "description": "For insurance agents: quote MGT small-business commercial insurance from Claude. Check appetite, classify the business, and create and edit quotes. All information is reviewed by licensed MGT underwriters.",
   "author": {
     "name": "MGT Insurance",
     "url": "https://github.com/MGT-Insurance"
