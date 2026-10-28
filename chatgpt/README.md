@@ -53,3 +53,4 @@ The main ZIPs are not released. Download `mgt-quoting-main-upload.zip` and `mgt-
 
 - Results can be wrong.
 - Binding happens in MGT's portal, never in ChatGPT.
+- All information is reviewed by licensed MGT underwriters.
