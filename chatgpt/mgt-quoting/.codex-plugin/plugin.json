@@ -82,7 +82,7 @@
         "commerce_description": "This plugin does not sell products or process payments."
       },
       "publication": {
-        "release_notes": "First release of MGT Quoting for ChatGPT. Insurance agents can check MGT's appetite for a business, classify it, and create, validate, and rate quotes for MGT small-business commercial products. Binding happens in MGT's portal. Support link now points to the MGT Quoting support page. All information is reviewed by licensed MGT underwriters. Businesses outside MGT's appetite or guidelines now get a message that points to contacting MGT through MGT's portal."
+        "release_notes": "First release of MGT Quoting for ChatGPT. Insurance agents can check MGT's appetite for a business, classify it, and create, validate, and rate quotes for MGT small-business commercial products. Binding happens in MGT's portal. Support link now points to the MGT Quoting support page. All information is reviewed by licensed MGT underwriters. When a business is outside MGT's appetite or guidelines, the agent now relays MGT's message about how to follow up instead of reporting a decline."
       }
     }
   }

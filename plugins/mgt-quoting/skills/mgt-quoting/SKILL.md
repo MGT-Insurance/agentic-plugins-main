@@ -16,7 +16,7 @@ The plan gives you the tool order and how to read each result: catalog, classifi
 You still own the judgment the plan can't make for you:
 
 - Collect the business name, a description of operations, the state, and the effective date. Ask for anything missing. Never guess a value.
-- Choose the product from what the user asked for, never from what appetite allows. If a product is `not_covered` or in `moratorium`, say so, relay the tool's `decline_message` as-is, and don't quote a substitute.
+- Choose the product from what the user asked for, never from what appetite allows. If a product is `not_covered`, relay its `decline_message` as-is. If it is in `moratorium`, say so. Either way, don't quote a substitute.
 - Report what the tools return.
 
 ## Tools
