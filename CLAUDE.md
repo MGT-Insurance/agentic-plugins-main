@@ -11,7 +11,7 @@ The ChatGPT plugin has four manifests in two folders that build two ZIPs. `chatg
 
 ## Shared files
 
-`shared/<plugin>/` is the canonical source for files that both plugins ship: the skill (`skills/mgt-quoting/SKILL.md`) and the logo (`assets/icon.png`). Edit them there, never in the plugin folders. Then run:
+`shared/<plugin>/` holds only the logo (`assets/icon.png`), which both plugins ship. Each plugin owns its own skill (`plugins/<plugin>/skills/...` and `chatgpt/<plugin>/skills/...`); edit each in place. Edit the logo in `shared/`, never in the plugin folders. Then run:
 
 ```bash
 node scripts/sync-shared.mjs
@@ -19,7 +19,7 @@ node scripts/sync-shared.mjs
 
 The script copies each shared file into `plugins/<plugin>/` and `chatgpt/<plugin>/`. The copies are real files, not symlinks, because each plugin folder must be self-contained. CI runs `node scripts/sync-shared.mjs --check` and names each missing or drifted file.
 
-A change to a shared file changes both plugins, so raise the `version` in `plugins/<plugin>/.claude-plugin/plugin.json`, `chatgpt/<plugin>/.codex-plugin/plugin.json`, and `chatgpt/<plugin>-upload/plugin.json`, using the version bump rule below. The ChatGPT plugin has its own version, and each ZIP upload to OpenAI is a new version.
+A change to the logo changes both plugins, so raise the `version` in `plugins/<plugin>/.claude-plugin/plugin.json`, `chatgpt/<plugin>/.codex-plugin/plugin.json`, and `chatgpt/<plugin>-upload/plugin.json`, using the version bump rule below. The ChatGPT plugin has its own version, and each ZIP upload to OpenAI is a new version.
 
 ## Promote to production
 

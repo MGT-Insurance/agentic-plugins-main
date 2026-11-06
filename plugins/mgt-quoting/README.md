@@ -7,6 +7,7 @@ MGT Quoting is for insurance agents who quote small-business commercial insuranc
 - **Results can be wrong.** Claude is an AI model. Classifications, field values, and summaries can contain mistakes.
 - **Binding happens in MGT's portal, not in Claude.** This plugin never binds coverage.
 - **All information is reviewed by licensed MGT underwriters.**
+- **Quoting output is not insurance advice.** This plugin is for licensed insurance professionals only.
 
 ## Who can use it
 

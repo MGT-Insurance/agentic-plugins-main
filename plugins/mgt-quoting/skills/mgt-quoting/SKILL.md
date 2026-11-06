@@ -5,15 +5,23 @@ description: Quote MGT small-business commercial insurance products (BOP, specia
 
 # Quote MGT products
 
-Use the MGT Quoting MCP server tools to build quotes for MGT small-business commercial insurance products. The user is an insurance agent. Binding happens in MGT's portal, not here. Never tell the user a quote is bound or offer to bind it.
+Use the MGT Quoting MCP server tools to build quotes for MGT small-business commercial insurance products. The user is an insurance agent. This plugin is for licensed insurance professionals only. Its quoting output is not insurance advice. Binding happens in MGT's portal, not here. Never tell the user a quote is bound or offer to bind it.
 
-## Start with the plan
+## Workflow
 
-To quote a risk, call `get_quoting_plan` first, before any other quoting tool, and follow the plan it returns. The tool takes no input.
+Quote in this order:
 
-The plan gives you the tool order and how to read each result: catalog, classification, appetite, product schema, create, edit, validate, then rate. It also sets the rules for confidence labels, values you must never invent, and the final handoff to MGT's portal. If anything below differs from the plan, follow the plan.
+1. Call `get_quoting_plan`. It takes no input and returns reference documentation of the quoting workflow: the tool order, how to read each result, the rules for confidence labels and values you must never invent, and the hand-off to MGT's portal.
+2. Call `get_quote_schema_catalog` to see which products this user can quote.
+3. If the business's classification is unclear, call `resolve_business_classification` once.
+4. Call `appetite_check`.
+5. Call `get_product_create_schema` once for each product you quote.
+6. Call `create_quote` with `rate: false`.
+7. Call `edit_quote` to fill in the missing fields.
+8. Call `validate_quote`.
+9. When `validate_quote` returns `valid: true`, rate the quote with `edit_quote`, `updates: []`, and `rate: true`.
 
-You still own the judgment the plan can't make for you:
+Throughout:
 
 - Collect the business name, a description of operations, the state, and the effective date. Ask for anything missing. Never guess a value.
 - Choose the product from what the user asked for, never from what appetite allows. If a product is `not_covered`, relay the message the tool returns with it as-is. If it is in `moratorium`, say so. Either way, don't quote a substitute.
@@ -23,7 +31,7 @@ You still own the judgment the plan can't make for you:
 
 | Tool | Use it to |
 |---|---|
-| `get_quoting_plan` | Get the step-by-step quoting plan. Call it first. |
+| `get_quoting_plan` | Get reference documentation of the quoting workflow. Call it first. |
 | `get_quote_schema_catalog` | List the products live for this user and the common field registry. |
 | `resolve_business_classification` | Map one fact (NAICS code, business description, MGT BOP class code, or industry group) to its NAICS entries, BOP classes, and industry groups. It does not decide appetite. |
 | `appetite_check` | Check per-product availability (`available`, `moratorium`, `not_covered`) for a business. |
