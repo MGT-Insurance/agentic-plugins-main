@@ -47,7 +47,7 @@ The portal manifests live outside the plugin folder because a root `plugin.json`
 
 The `.mcp.json` oauth block holds the Auth0 `client_id` and the loopback callback, and `mcp.json` holds the `clientId`. No client secret is stored in this repository.
 
-The skill and logo that both plugins ship live once in `shared/mgt-quoting/`. After you change a file there, run `node scripts/sync-shared.mjs` and commit the copies. CI runs `node scripts/sync-shared.mjs --check` and fails when a copy drifts.
+The logo that both plugins ship lives once in `shared/mgt-quoting/`. Each plugin owns its own skill. After you change the logo, run `node scripts/sync-shared.mjs` and commit the copies. CI runs `node scripts/sync-shared.mjs --check` and fails when a copy drifts.
 
 The **plugin-checks** workflow builds `mgt-quoting-main-upload.zip` and `mgt-quoting-main-desktop.zip` from `chatgpt/mgt-quoting/` and `chatgpt/mgt-quoting-upload/` and uploads both as workflow artifacts. The upload ZIP has `plugin.json` and `mcp.json` at its root, and the desktop ZIP has `.codex-plugin/plugin.json` and `.mcp.json` at its root. The build fails when the two manifest sets drift, and the workflow validates `plugin.json` against the Agent Plugins schema in `scripts/schemas/`. To build both ZIPs locally:
 
