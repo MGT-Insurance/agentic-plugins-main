@@ -16,9 +16,12 @@
         { "from": "mgt-quoting-main", "to": "mgt-quoting" },
         { "from": "mcp-main.mgtinsurance.ai", "to": "mcp.mgtinsurance.ai" },
         { "from": "HgnEBwza09kAszhdXtoEnz6ofrCHrM2v", "to": "uMMqJMAYSADCF3BY9yJqHlzpb1tbNV17" },
-        { "from": "MGT Quoting (main)", "to": "MGT Quoting" }
+        { "from": "MGT Quoting (main)", "to": "MGT Quoting" },
+        { "from": "mgt-waldo-main", "to": "mgt-waldo" },
+        { "from": "MGT Waldo (main)", "to": "MGT Waldo" },
+        { "from": "https://main.mgtinsurance.ai", "to": "https://mgtinsurance.ai" }
       ],
-      "forbid": ["-main", "(main)", "typescript-tools", "mcp-main.mgtinsurance.ai", "HgnEBwza09kAszhdXtoEnz6ofrCHrM2v"],
+      "forbid": ["-main", "(main)", "typescript-tools", "mcp-main.mgtinsurance.ai", "main.mgtinsurance.ai", "HgnEBwza09kAszhdXtoEnz6ofrCHrM2v"],
       "notice": {
         "file": "promote/production-notice.md",
         "prependTo": ["README.md", "CLAUDE.md"]

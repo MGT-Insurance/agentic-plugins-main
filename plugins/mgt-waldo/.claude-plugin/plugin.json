@@ -1,0 +1,15 @@
+{
+  "name": "mgt-waldo",
+  "version": "0.1.0",
+  "displayName": "MGT Waldo (main)",
+  "description": "For MGT employees: Claude remembers things for you, searches and reads your own documents, and answers from MGT's shared knowledge.",
+  "author": {
+    "name": "MGT Insurance",
+    "url": "https://github.com/MGT-Insurance"
+  },
+  "homepage": "https://github.com/MGT-Insurance/agentic-plugins-main",
+  "repository": "https://github.com/MGT-Insurance/agentic-plugins-main",
+  "license": "MIT",
+  "icon": "./assets/icon.png",
+  "documentationUrl": "https://github.com/MGT-Insurance/agentic-plugins-main/tree/main/plugins/mgt-waldo"
+}

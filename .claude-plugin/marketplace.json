@@ -9,6 +9,11 @@
       "name": "mgt-quoting",
       "source": "./plugins/mgt-quoting",
       "description": "For insurance agents: quote MGT small-business commercial insurance from Claude through MGT's quoting tools. Quoting output is not insurance advice. For licensed insurance professionals only."
+    },
+    {
+      "name": "mgt-waldo",
+      "source": "./plugins/mgt-waldo",
+      "description": "For MGT employees: Claude remembers things for you, searches your own documents, and answers from MGT's shared knowledge."
     }
   ]
 }
