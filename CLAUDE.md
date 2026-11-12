@@ -30,6 +30,8 @@ Promote after the MCP server release that matches your plugin change reaches pro
 
 The workflow runs once per target. The ChatGPT target needs the `CHATGPT_PROMOTE_DEPLOY_KEY` secret and is skipped with a message when the secret is absent.
 
+claude.ai organization marketplaces accept only private or internal repositories, so each Claude marketplace has a private mirror. The `mirror` workflow writes `MGT-Insurance/agentic-plugins-main-internal` on every push to `main`, using the `MIRROR_DEPLOY_KEY` secret. A promote run with `dry_run` off also runs `scripts/sync-mirror.sh` to write the generated `claude-plugins` tree, without `.github/`, to `MGT-Insurance/claude-plugins-internal`, using the `PROD_MIRROR_DEPLOY_KEY` secret. That step runs even when `claude-plugins` had no changes, and the script writes no commit when the mirror already matches. The promote run fails with an error when the secret is missing. Rulesets on each mirror block every push except the deploy key's, so never commit to a mirror by hand. claude.ai organizations add the `-internal` repositories, never the public ones.
+
 To preview locally, check out the production repository and run the script with the target name:
 
 ```bash

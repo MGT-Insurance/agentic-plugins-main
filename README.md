@@ -63,6 +63,12 @@ claude.ai organization marketplaces accept only private or internal repositories
 
 To add it, install the Claude GitHub App on `MGT-Insurance/agentic-plugins-main-internal`. Then, in claude.ai, go to **Organization settings** > **Plugins & skills** > **Marketplaces** > **Add** and enter that repository. Only the sync can write to the mirror: its rulesets reject every other push, including pushes from admins.
 
+### Production marketplace
+
+The production marketplace, `MGT-Insurance/claude-plugins`, is public, so it has the same limitation. When you run the **promote** workflow with `dry_run` off, the workflow also writes one snapshot commit to the private repository [`MGT-Insurance/claude-plugins-internal`](https://github.com/MGT-Insurance/claude-plugins-internal). The snapshot holds the promoted `claude-plugins` files without `.github/`, and its commit message names the `claude-plugins` commit. The mirror's marketplace is the same `mgt-insurance` marketplace. This step runs on every promote, even when `claude-plugins` had no changes, and writes no commit when the mirror already matches.
+
+To add it, follow the steps above for `MGT-Insurance/claude-plugins-internal`. The workflow reads the `PROD_MIRROR_DEPLOY_KEY` secret, the private half of a write deploy key on that repository, and fails with an error when the secret is missing. The mirror has the same rulesets as `agentic-plugins-main-internal`.
+
 <!-- main-only:end -->
 ## Add the marketplace
 
