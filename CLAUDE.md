@@ -46,7 +46,7 @@ Promote never touches `.github/` in the production repositories: it keeps what i
 - `replacements`: plain string replacements applied to every text file. The script applies the longest `from` first, so list a value once and don't worry about prefixes.
 - `forbid`: substrings that must not appear in the output, to catch a main value that has no `replacements` entry.
 - `include` (optional): the only paths the target receives.
-- `exclude`: paths that stay out of the target.
+- `exclude`: paths that stay out of the target. Excluding a plugin folder (for example `plugins/mgt-waldo/`) also removes its entry from the promoted `.claude-plugin/marketplace.json`, so a main-only plugin needs no other mapping.
 - `move` (optional): renames a promoted file. The `chatgpt-plugins` target moves `chatgpt/README.md` to the repository root.
 - `notice` (optional): the generated-file notice that the script prepends to the listed files.
 - `zipCheck` (optional): builds both ChatGPT plugin ZIPs from the promoted `source` folder into a temporary directory and discards them, so promote fails before it writes anything if the plugin can't be zipped. Promote doesn't write a ZIP. `MGT-Insurance/chatgpt-plugins` builds and releases `mgt-quoting-upload.zip` and `mgt-quoting-desktop.zip` with its own `.github/workflows/release.yml`, which you edit by hand there.

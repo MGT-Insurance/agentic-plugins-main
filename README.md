@@ -81,6 +81,9 @@ claude plugin marketplace add MGT-Insurance/agentic-plugins-main
 | Plugin | Install | Description |
 |---|---|---|
 | [`mgt-quoting`](plugins/mgt-quoting) | `claude plugin install mgt-quoting@mgt-insurance-main` | For insurance agents: quote MGT small-business commercial insurance from Claude. |
-| [`mgt-waldo`](plugins/mgt-waldo) | `claude plugin install mgt-waldo@mgt-insurance-main` | For MGT employees: Claude remembers things for you, searches your own documents, and answers from MGT's shared knowledge. |
+
+<!-- main-only:start -->
+This marketplace also has [`mgt-waldo`](plugins/mgt-waldo), for MGT employees: Claude remembers things for you, searches your own documents, and answers from MGT's shared knowledge. Install it with `claude plugin install mgt-waldo@mgt-insurance-main`. It isn't promoted to the production marketplace.
+<!-- main-only:end -->
 
 Each plugin's README covers its install, update, and data-handling details.

@@ -67,6 +67,18 @@ for (const path of files) {
   output.set(path, Buffer.from(kept.replace(swapPattern, (match) => swapTo.get(match)), 'utf8'));
 }
 
+// A plugin folder the target excludes is also dropped from the promoted marketplace listing.
+const MARKETPLACE = '.claude-plugin/marketplace.json';
+if (output.has(MARKETPLACE)) {
+  const marketplace = JSON.parse(output.get(MARKETPLACE).toString('utf8'));
+  const listed = marketplace.plugins ?? [];
+  const isPromoted = ({ source }) => typeof source !== 'string' || !isExcluded(`${source.replace(/^\.\//, '')}/`);
+  if (!listed.every(isPromoted)) {
+    marketplace.plugins = listed.filter(isPromoted);
+    output.set(MARKETPLACE, Buffer.from(`${JSON.stringify(marketplace, null, 2)}\n`, 'utf8'));
+  }
+}
+
 for (const { from, to } of target.move ?? []) {
   if (!output.has(from)) fail(`[${targetName}] move source ${from} is not in the output`);
   output.set(to, output.get(from));
