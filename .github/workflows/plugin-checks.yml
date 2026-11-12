@@ -30,7 +30,28 @@ jobs:
             claude plugin validate --strict "$dir"
           done
 
-      # The steps that use scripts/ or chatgpt/ skip in the production repositories, which don't have them.
+      # The steps that use promote/, scripts/, or chatgpt/ skip in the generated repositories, which don't have them.
+      - name: Test the promote engine
+        if: ${{ hashFiles('promote/promote.test.mjs') != '' }}
+        run: node --test promote/promote.test.mjs
+
+      # A leak or a stale mapping fails the pull request here instead of in the next publish or promote run.
+      - name: Generate every promote target and validate the Claude marketplaces (strict)
+        if: ${{ hashFiles('promote/production.json') != '' }}
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          for target in $(jq -r '.targets[].name' promote/production.json); do
+            git init -q "${scratch}/${target}"
+            node promote/promote.mjs . "${target}" "${scratch}/${target}"
+            if [ -f "${scratch}/${target}/.claude-plugin/marketplace.json" ]; then
+              claude plugin validate --strict "${scratch}/${target}"
+              for dir in "${scratch}/${target}"/plugins/*/; do
+                claude plugin validate --strict "$dir"
+              done
+            fi
+          done
+
       - name: Check shared files are in sync
         if: ${{ hashFiles('scripts/sync-shared.mjs') != '' }}
         run: node scripts/sync-shared.mjs --check
