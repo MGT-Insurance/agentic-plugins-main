@@ -158,6 +158,35 @@ describe('leak guard', () => {
     assert.equal(upload.run('pub').status, 1);
   });
 
+  it('matches a hyphen continuation of the internal name, in text and in paths', () => {
+    const config = defaultConfig();
+    config.internal = [{ name: 'mgt-scratch' }];
+    for (const word of ['mgt-scratch', 'mgt-scratch-main', 'mgt-scratch-upload', 'mgt-scratch-notes', 'mgt-scratch-foo']) {
+      const text = fixture({ config, files: { 'README.md': `See ${word} here.\n` } });
+      assert.equal(text.run('pub').status, 1, `text ${word}`);
+      const path = fixture({ config, files: { [`docs/${word}.md`]: 'x\n' } });
+      assert.equal(path.run('pub').status, 1, `path ${word}`);
+    }
+  });
+
+  it('matches case and separator variants of the internal name', () => {
+    const config = defaultConfig();
+    config.internal = [{ name: 'mgt-scratch' }];
+    for (const word of ['MGT-Scratch', 'mgt_scratch', 'Mgt Scratch']) {
+      const f = fixture({ config, files: { 'README.md': `See ${word} here.\n` } });
+      assert.equal(f.run('pub').status, 1, word);
+    }
+  });
+
+  it('does not match names that only share a prefix or use another separator after the name', () => {
+    const config = defaultConfig();
+    config.internal = [{ name: 'mgt-scratch' }];
+    for (const word of ['mgt-scratchpad', 'xmgt-scratch', 'mgt-scratch_foo']) {
+      const f = fixture({ config, files: { 'README.md': `See ${word} here.\n` } });
+      assert.equal(f.run('pub').status, 0, word);
+    }
+  });
+
   it('fails on a marker as a plain substring', () => {
     const config = defaultConfig();
     config.internal = [{ name: 'int', markers: ['int_secret_endpoint'] }];

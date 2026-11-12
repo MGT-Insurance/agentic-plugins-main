@@ -22,6 +22,15 @@ jobs:
         with:
           path: source
 
+      - name: Check for the claude-plugins deploy key
+        env:
+          PROMOTE_KEY: ${{ secrets.PROMOTE_DEPLOY_KEY }}
+        run: |
+          if [ -z "${PROMOTE_KEY}" ]; then
+            echo "::error::The PROMOTE_DEPLOY_KEY secret is not set. Add a write deploy key to MGT-Insurance/claude-plugins and store its private key as this secret."
+            exit 1
+          fi
+
       - name: Check for the claude-plugins-internal deploy key
         env:
           PROD_INTERNAL_KEY: ${{ secrets.PROD_INTERNAL_DEPLOY_KEY }}
@@ -249,7 +258,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Publish from agentic-plugins-main-internal@${SOURCE_SHA:0:7}"
+          git commit -m "Promote from source@${SOURCE_SHA:0:7}"
           git push origin HEAD:main
 
       - name: Commit and push to claude-plugins-internal
@@ -261,7 +270,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Publish from agentic-plugins-main-internal@${SOURCE_SHA:0:7}"
+          git commit -m "Promote from agentic-plugins-main-internal@${SOURCE_SHA:0:7}"
           git push origin HEAD:main
 
       - name: Commit and push to chatgpt-plugins
@@ -273,7 +282,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Publish from agentic-plugins-main-internal@${SOURCE_SHA:0:7}"
+          git commit -m "Promote from source@${SOURCE_SHA:0:7}"
           git push origin HEAD:main
 
       - name: Dry run notice

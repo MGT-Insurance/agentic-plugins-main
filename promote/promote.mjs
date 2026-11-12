@@ -197,8 +197,10 @@ if (leaks.length) fail(`[${targetName}] source values survive in the output:\n${
 if (isPublic && internal.length) {
   const internalLeaks = [];
   for (const { name, markers } of internal) {
-    // Whole-token match: "intake" doesn't match "int", but "int-main" and "int-upload" do.
-    const token = new RegExp(`(?<![A-Za-z0-9_-])${escapeRegExp(name)}(?:-main)?(?:-upload)?(?![A-Za-z0-9_-])`);
+    // Whole-token match, case-insensitive. "_" and a single space equal "-" between name parts, and a "-" continuation
+    // (name-main, name-upload, name-notes) matches: "int" doesn't match "intake" or "int_x", but "Int-main" does.
+    const parts = name.split(/[-_ ]/).map(escapeRegExp).join('[-_ ]');
+    const token = new RegExp(`(?<![A-Za-z0-9_-])${parts}(?:-[A-Za-z0-9_-]*)?(?![A-Za-z0-9_])`, 'i');
     const entryNames = new Set([name, `${name}-main`]);
     for (const [path, buffer] of output) {
       if (internalPaths.some((rule) => path.startsWith(rule))) internalLeaks.push(`  ${path}: plugin "${name}" has an internal path`);

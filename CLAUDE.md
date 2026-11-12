@@ -34,7 +34,7 @@ A change to the logo changes both plugins, so raise the `version` in `plugins/<p
 
 ## Publish and promote
 
-Every push to `main` runs the **publish-dev** workflow, which writes `MGT-Insurance/agentic-plugins-main`. The workflow validates the output and commits only when the tree changed. A commit in any generated repository reads "Publish from agentic-plugins-main-internal@<sha7>".
+Every push to `main` runs the **publish-dev** workflow, which writes `MGT-Insurance/agentic-plugins-main`. The workflow validates the output and commits only when the tree changed. A commit in a public repository reads "Publish from source@<sha7>" or "Promote from source@<sha7>", so it never names the private source. The `claude-plugins-internal` commit reads "Promote from agentic-plugins-main-internal@<sha7>".
 
 Promote after the MCP server release that matches your plugin change reaches production. The plugin's skill describes MCP tools, and the main server gets new tools first.
 
@@ -100,10 +100,10 @@ For each public target, promote excludes the internal paths and drops the matchi
 
 - A path that starts with an internal path or contains the plugin name as a whole token.
 - A marketplace entry named `n` or `n-main`.
-- A text file that contains `n`, `n-main`, or `n-upload` as a whole token. A token isn't preceded or followed by a letter, digit, underscore, or hyphen, so `intake` doesn't match a plugin named `int`.
+- A text file that contains `n` as a whole token, with any `-` continuation such as `n-main`, `n-upload`, or `n-notes`. The match ignores case, and `_` or a single space equals `-` between name parts. A token isn't preceded by a letter, digit, underscore, or hyphen, and isn't followed by a letter, digit, or underscore, so `intake` doesn't match a plugin named `int`.
 - A text file that contains any of the plugin's `markers` as a substring.
 
-When the guard fails, move the text into an `internal-only` block or remove it. Put the internal plugin's production mapping, for example `mgt-waldo-main` to `mgt-waldo`, only in the `claude-plugins-internal` target, so the public targets' stale-mapping check never sees it.
+When the guard fails, move the text into an `internal-only` block or remove it. Put the internal plugin's production mapping, for example `mgt-waldo-main` to `mgt-waldo`, only in the `claude-plugins-internal` target, so the public targets' stale-mapping check never sees it. An internal plugin whose text contains `-main` needs a mapping in the `claude-plugins-internal` target, because that target inherits the `-main` forbid from `claude-plugins`.
 
 Edits to `promote/`, `scripts/`, and `.github/` need no version bump.
 
