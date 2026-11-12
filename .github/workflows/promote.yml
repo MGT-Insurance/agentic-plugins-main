@@ -177,6 +177,18 @@ jobs:
           git commit -m "Promote from agentic-plugins-main@${MAIN_SHA:0:7}"
           git push origin HEAD:main
 
+      - name: Commit and push to chatgpt-plugins
+        if: ${{ !inputs.dry_run && steps.chatgpt.outputs.enabled == 'true' && steps.diff-chatgpt.outputs.changed == 'true' }}
+        working-directory: prod-chatgpt
+        env:
+          MAIN_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Promote from agentic-plugins-main@${MAIN_SHA:0:7}"
+          git push origin HEAD:main
+
       # Runs on every promote, even when claude-plugins had no changes, so the mirror catches up.
       # The script writes no commit when the mirror already matches.
       - name: Write a snapshot to the private claude-plugins-internal mirror
@@ -195,18 +207,6 @@ jobs:
           export GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
           main/scripts/sync-mirror.sh "$GITHUB_WORKSPACE/prod" "$(git -C prod rev-parse HEAD)" git@github.com:MGT-Insurance/claude-plugins-internal.git MGT-Insurance/claude-plugins
           rm -f "$key_file"
-
-      - name: Commit and push to chatgpt-plugins
-        if: ${{ !inputs.dry_run && steps.chatgpt.outputs.enabled == 'true' && steps.diff-chatgpt.outputs.changed == 'true' }}
-        working-directory: prod-chatgpt
-        env:
-          MAIN_SHA: ${{ github.sha }}
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Promote from agentic-plugins-main@${MAIN_SHA:0:7}"
-          git push origin HEAD:main
 
       - name: Dry run notice
         if: ${{ inputs.dry_run }}
