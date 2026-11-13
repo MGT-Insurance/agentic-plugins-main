@@ -336,6 +336,18 @@ describe('fail-closed configuration', () => {
     assert.equal(fixture({ config: strings }).run('pub').status, 1);
   });
 
+  it('fails when source is missing or empty', () => {
+    const missing = defaultConfig();
+    delete missing.source;
+    const result = fixture({ config: missing }).run('pub');
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /"source"/);
+
+    const empty = defaultConfig();
+    empty.source = '';
+    assert.equal(fixture({ config: empty }).run('pub').status, 1);
+  });
+
   it('fails on an unknown target and on a stale mapping', () => {
     assert.equal(fixture().run('nope').status, 1);
 

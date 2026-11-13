@@ -38,6 +38,7 @@ try {
   fail(`can't read promote/production.json: ${error.message}`);
 }
 const targets = config.targets ?? [];
+if (typeof config.source !== 'string' || config.source === '') fail('promote/production.json needs a top-level "source" string naming the private source repository');
 if (!Array.isArray(config.internal)) fail('promote/production.json needs a top-level "internal" list (use [] for none)');
 const internal = config.internal.map((entry, index) => {
   if (!entry || typeof entry !== 'object' || typeof entry.name !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(entry.name)) {
@@ -131,7 +132,7 @@ for (const path of files) {
   }
   const kept = stripBlocks(path, buffer.toString('utf8'));
   // A replacement can rewrite the private source name (a "from" that is a prefix of it), so check before replacing.
-  if (isPublic && config.source && kept.includes(config.source)) sourceNameLeaks.push(`  ${path}: names the private source "${config.source}"`);
+  if (isPublic && kept.includes(config.source)) sourceNameLeaks.push(`  ${path}: names the private source "${config.source}"`);
   for (const { from } of replacements) if (kept.includes(from)) seen.add(from);
   output.set(path, Buffer.from(swapPattern ? kept.replace(swapPattern, (match) => swapTo.get(match)) : kept, 'utf8'));
 }
