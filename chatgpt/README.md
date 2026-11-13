@@ -45,11 +45,6 @@ To install the main plugin from a marketplace, add the source `MGT-Insurance/age
 
 The main ZIPs are not released. MGT staff download `mgt-quoting-main-upload.zip` and `mgt-quoting-main-desktop.zip` from the **plugin-checks** workflow run's artifacts in MGT's private source repository instead of the production release above. If you aren't MGT staff, use the marketplace source above.
 
-<!-- internal-only:start -->
-The source repository is `MGT-Insurance/agentic-plugins-main-internal`, so only people with access to it can download the artifacts. This stays true until a workflow releases the main ZIPs on the public development repository.
-
-<!-- internal-only:end -->
-
 - The main desktop ZIP signs in with the dev "Mithril MCP (external testers)" Auth0 client. That client is public, so there is no secret.
 - The main upload ZIP signs in with the dev "ChatGPT directory" Auth0 client. Enter that client's secret in the portal when you upload it.
 <!-- main-only:end -->
