@@ -54,5 +54,3 @@ claude plugin marketplace add MGT-Insurance/agentic-plugins-main
 
 Each plugin's README covers its install, update, and data-handling details.
 
-<!-- main-only:start -->
-<!-- main-only:end -->
