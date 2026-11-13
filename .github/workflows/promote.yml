@@ -13,8 +13,9 @@ permissions:
 
 jobs:
   promote:
-    # This workflow writes the production repositories from the private source. It skips everywhere else.
-    if: github.repository == 'MGT-Insurance/agentic-plugins-main-internal'
+    # This workflow writes the production repositories from the private source. It skips everywhere except the main branch
+    # of that repository, so a manual run from another branch can't promote that branch.
+    if: github.repository == 'MGT-Insurance/agentic-plugins-main-internal' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Check out the source repository
@@ -249,18 +250,7 @@ jobs:
             git diff --cached HEAD
           fi
 
-      - name: Commit and push to claude-plugins
-        if: ${{ !inputs.dry_run && steps.diff.outputs.changed == 'true' }}
-        working-directory: prod
-        env:
-          SOURCE_SHA: ${{ github.sha }}
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Promote from source@${SOURCE_SHA:0:7}"
-          git push origin HEAD:main
-
+      # The private target goes first: if a later push fails, the public repositories never run ahead of it.
       - name: Commit and push to claude-plugins-internal
         if: ${{ !inputs.dry_run && steps.diff-internal.outputs.changed == 'true' }}
         working-directory: prod-internal
@@ -271,6 +261,18 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Promote from agentic-plugins-main-internal@${SOURCE_SHA:0:7}"
+          git push origin HEAD:main
+
+      - name: Commit and push to claude-plugins
+        if: ${{ !inputs.dry_run && steps.diff.outputs.changed == 'true' }}
+        working-directory: prod
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Promote from source@${SOURCE_SHA:0:7}"
           git push origin HEAD:main
 
       - name: Commit and push to chatgpt-plugins

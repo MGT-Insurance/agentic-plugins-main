@@ -106,6 +106,7 @@ const output = new Map(); // path -> Buffer
 const swapPattern = replacements.length ? new RegExp(replacements.map((r) => escapeRegExp(r.from)).join('|'), 'g') : null;
 const swapTo = new Map(replacements.map((r) => [r.from, r.to]));
 const seen = new Set();
+const sourceNameLeaks = [];
 
 // Text between "<!-- tag:start -->" and "<!-- tag:end -->" lines is removed for each tag in "stripBlocks".
 const stripPatterns = target.stripBlocks.map((tag) => ({
@@ -129,6 +130,8 @@ for (const path of files) {
     continue;
   }
   const kept = stripBlocks(path, buffer.toString('utf8'));
+  // A replacement can rewrite the private source name (a "from" that is a prefix of it), so check before replacing.
+  if (isPublic && config.source && kept.includes(config.source)) sourceNameLeaks.push(`  ${path}: names the private source "${config.source}"`);
   for (const { from } of replacements) if (kept.includes(from)) seen.add(from);
   output.set(path, Buffer.from(swapPattern ? kept.replace(swapPattern, (match) => swapTo.get(match)) : kept, 'utf8'));
 }
@@ -137,6 +140,10 @@ for (const { from, to } of target.move ?? []) {
   if (!output.has(from)) fail(`[${targetName}] move source ${from} is not in the output`);
   output.set(to, output.get(from));
   output.delete(from);
+}
+
+if (sourceNameLeaks.length) {
+  fail(`[${targetName}] the private source name appears in a file that reaches a public target:\n${sourceNameLeaks.join('\n')}`);
 }
 
 const stale = replacements.filter(({ from }) => !seen.has(from));
@@ -177,6 +184,9 @@ for (const marketplace of MARKETPLACES) {
     }
   }
   if (kept.length !== parsed.plugins.length) {
+    for (const plugin of parsed.plugins) {
+      if (!kept.includes(plugin)) console.log(`promote: [${targetName}] dropped ${marketplace} entry "${plugin.name}"`);
+    }
     parsed.plugins = kept;
     output.set(marketplace, Buffer.from(`${JSON.stringify(parsed, null, 2)}\n`, 'utf8'));
   }
@@ -197,14 +207,17 @@ if (leaks.length) fail(`[${targetName}] source values survive in the output:\n${
 if (isPublic && internal.length) {
   const internalLeaks = [];
   for (const { name, markers } of internal) {
-    // Whole-token match, case-insensitive. "_" and a single space equal "-" between name parts, and a "-" continuation
-    // (name-main, name-upload, name-notes) matches: "int" doesn't match "intake" or "int_x", but "Int-main" does.
-    const parts = name.split(/[-_ ]/).map(escapeRegExp).join('[-_ ]');
-    const token = new RegExp(`(?<![A-Za-z0-9_-])${parts}(?:-[A-Za-z0-9_-]*)?(?![A-Za-z0-9_])`, 'i');
+    // Case-insensitive. Between name parts, any run of "-", "_", or whitespace, or nothing, is the separator:
+    // "mgt-scratch", "MGT_SCRATCH", "mgt  scratch", "MgtScratch", and a line-wrapped "mgt\nscratch" all match.
+    // A letter or digit before the name, or a letter after it, ends the match: "int" doesn't match "intake" or "print",
+    // but "int_x", "int-main", and "int2" do.
+    const parts = name.split(/[-_ ]/).map(escapeRegExp).join('[-_\\s]*');
+    const token = new RegExp(`(?<![A-Za-z0-9])${parts}(?![A-Za-z])`, 'i');
     const entryNames = new Set([name, `${name}-main`]);
     for (const [path, buffer] of output) {
       if (internalPaths.some((rule) => path.startsWith(rule))) internalLeaks.push(`  ${path}: plugin "${name}" has an internal path`);
       else if (token.test(path)) internalLeaks.push(`  ${path}: plugin "${name}" is named in the path`);
+      for (const marker of markers) if (path.includes(marker)) internalLeaks.push(`  ${path}: plugin "${name}" marker "${marker}" is in the path`);
       if (!isText(buffer)) continue;
       const text = buffer.toString('utf8');
       const match = token.exec(text);

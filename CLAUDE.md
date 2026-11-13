@@ -98,10 +98,12 @@ An internal plugin is for MGT employees. It reaches the private `claude-plugins-
 
 For each public target, promote excludes the internal paths and drops the matching marketplace entries. Then the leak guard fails the run, with no allowlist, when any of these remain in the output:
 
-- A path that starts with an internal path or contains the plugin name as a whole token.
+- A path that starts with an internal path or contains the plugin name as a token.
 - A marketplace entry named `n` or `n-main`.
-- A text file that contains `n` as a whole token, with any `-` continuation such as `n-main`, `n-upload`, or `n-notes`. The match ignores case, and `_` or a single space equals `-` between name parts. A token isn't preceded by a letter, digit, underscore, or hyphen, and isn't followed by a letter, digit, or underscore, so `intake` doesn't match a plugin named `int`.
-- A text file that contains any of the plugin's `markers` as a substring.
+- A text file that contains `n` as a token. The match ignores case. Between the parts of the name, any run of `-`, `_`, or whitespace, or nothing at all, counts as the separator, so `n` matches `mgt-scratch`, `MGT_SCRATCH_URL`, `MgtScratch`, `mgtscratch`, `mgt  scratch`, and a name wrapped across two lines. A token isn't preceded by a letter or digit, and isn't followed by a letter. A `-`, `_`, or digit after the name still matches (`n-main`, `n_foo`, `n2`), and a letter doesn't, so a plugin named `int` doesn't match `intake` or `print`, and `mgt-scratch` doesn't match `mgt-scratchpad` or `xmgt-scratch`.
+- A path or text file that contains any of the plugin's `markers` as a substring.
+
+Separately, every public target fails when the top-level `source` value (the private repository, as written in `promote/production.json`) appears in a file that reaches the output. The check reads the text before the replacements run, because a replacement such as `MGT-Insurance/agentic-plugins-main` rewrites the start of `MGT-Insurance/agentic-plugins-main-internal` and hides it. Text inside an `internal-only` block is stripped first, so it doesn't count.
 
 When the guard fails, move the text into an `internal-only` block or remove it. Put the internal plugin's production mapping, for example `mgt-waldo-main` to `mgt-waldo`, only in the `claude-plugins-internal` target, so the public targets' stale-mapping check never sees it. An internal plugin whose text contains `-main` needs a mapping in the `claude-plugins-internal` target, because that target inherits the `-main` forbid from `claude-plugins`.
 

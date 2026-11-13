@@ -152,7 +152,7 @@ describe('leak guard', () => {
     const suffixed = fixture({ files: { 'README.md': 'Install int-main today.\n' } });
     const result = suffixed.run('pub');
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /int-main/);
+    assert.match(result.stderr, /README\.md/);
 
     const upload = fixture({ files: { 'README.md': 'See chatgpt/int-upload/ for details.\n' } });
     assert.equal(upload.run('pub').status, 1);
@@ -178,13 +178,75 @@ describe('leak guard', () => {
     }
   });
 
-  it('does not match names that only share a prefix or use another separator after the name', () => {
+  it('matches realistic spellings: underscores, prefixes, digits, joined, wrapped, and spaced', () => {
     const config = defaultConfig();
     config.internal = [{ name: 'mgt-scratch' }];
-    for (const word of ['mgt-scratchpad', 'xmgt-scratch', 'mgt-scratch_foo']) {
+    const spellings = [
+      'MGT_SCRATCH_URL',
+      'claude-mgt-scratch',
+      'my_mgt-scratch',
+      'mgt-scratch2',
+      'mgt-scratch_foo',
+      'MgtScratch',
+      'mgtscratch',
+      'mgt\nscratch',
+      'mgt  scratch',
+    ];
+    for (const word of spellings) {
+      const f = fixture({ config, files: { 'README.md': `See ${word} here.\n` } });
+      assert.equal(f.run('pub').status, 1, JSON.stringify(word));
+    }
+  });
+
+  it('does not match a letter on either side of the name', () => {
+    const config = defaultConfig();
+    config.internal = [{ name: 'mgt-scratch' }];
+    for (const word of ['mgt-scratchpad', 'xmgt-scratch', 'mgt-scratches']) {
       const f = fixture({ config, files: { 'README.md': `See ${word} here.\n` } });
       assert.equal(f.run('pub').status, 0, word);
     }
+    for (const word of ['intake', 'print', 'Policy intake is open']) {
+      const f = fixture({ files: { 'README.md': `${word}.\n` } });
+      assert.equal(f.run('pub').status, 0, word);
+    }
+  });
+
+  it('fails when the private source name would be rewritten by a prefix replacement', () => {
+    const config = defaultConfig();
+    config.source = 'example/src-internal';
+    config.targets[0].replacements = [{ from: 'example/src', to: 'example/pub' }];
+    const f = fixture({ config, files: { 'README.md': 'Built from example/src-internal.\n' } });
+    const result = f.run('pub');
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /private source/);
+    assert.match(result.stderr, /README\.md/);
+    assert.equal(f.has('README.md'), false, 'the checkout stays untouched');
+  });
+
+  it('allows the private source name in a private target and inside an internal-only block', () => {
+    const config = defaultConfig();
+    config.source = 'example/src-internal';
+    const text = 'Built from example/src-internal.\n';
+    assert.equal(fixture({ config, files: { 'README.md': text } }).run('priv').status, 0);
+    const wrapped = `<!-- internal-only:start -->\n${text}<!-- internal-only:end -->\n`;
+    assert.equal(fixture({ config, files: { 'README.md': wrapped } }).run('pub').status, 0);
+  });
+
+  it('fails on a marker in a path', () => {
+    const config = defaultConfig();
+    config.internal = [{ name: 'int', markers: ['secret-endpoint'] }];
+    const f = fixture({ config, files: { 'docs/secret-endpoint.md': 'x\n' } });
+    const result = f.run('pub');
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /secret-endpoint/);
+    assert.match(result.stderr, /in the path/);
+  });
+
+  it('logs each dropped marketplace entry', () => {
+    const result = fixture().run('pub');
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /\[pub\] dropped \.claude-plugin\/marketplace\.json entry "int"/);
+    assert.match(result.stdout, /\[pub\] dropped \.agents\/plugins\/marketplace\.json entry "int"/);
   });
 
   it('fails on a marker as a plain substring', () => {

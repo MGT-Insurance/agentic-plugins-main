@@ -17,8 +17,9 @@ concurrency:
 
 jobs:
   publish-dev:
-    # This workflow skips everywhere except the private source repository.
-    if: github.repository == 'MGT-Insurance/agentic-plugins-main-internal'
+    # This workflow skips everywhere except the main branch of the private source repository,
+    # so a manual run from another branch can't publish that branch.
+    if: github.repository == 'MGT-Insurance/agentic-plugins-main-internal' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Check out the source repository
